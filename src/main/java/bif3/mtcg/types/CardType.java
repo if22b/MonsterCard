@@ -1,4 +1,4 @@
-package MonsterCard.mtcg.types;
+package bif3.mtcg.types;
 
 public enum CardType {
     Dragon,

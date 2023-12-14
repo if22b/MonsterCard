@@ -1,7 +1,8 @@
-package MonsterCard.mtcg;
-import bif3.swe1.database.DatabaseService;
+package bif3.mtcg;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import bif3.database.DatabaseService;
 import lombok.Getter;
 
 import java.sql.Connection;

@@ -1,8 +1,7 @@
-package MonsterCard.mtcg;
+package bif3.mtcg;
 
-import MonsterCard.mtcg.types.CardType;
-import MonsterCard.mtcg.types.ElementType;
-
+import bif3.mtcg.types.CardType;
+import bif3.mtcg.types.ElementType;
 import lombok.Getter;
 
 

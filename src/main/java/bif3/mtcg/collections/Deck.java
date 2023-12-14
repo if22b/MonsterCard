@@ -1,9 +1,9 @@
-package MonsterCard.mtcg.collections;
-
-import MonsterCard.mtcg.Card;
+package bif3.mtcg.collections;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import bif3.mtcg.Card;
 
 public class Deck {
 

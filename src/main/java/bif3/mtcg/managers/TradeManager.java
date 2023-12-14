@@ -1,8 +1,9 @@
-package MonsterCard.mtcg.managers;
+package bif3.mtcg.managers;
 
-import MonsterCard.mtcg.User;
-import MonsterCard.mtcg.types.CardType;
-import bif3.swe1.database.DatabaseService;
+import bif3.database.DatabaseService;
+import bif3.mtcg.User;
+import bif3.mtcg.types.CardType;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

@@ -1,7 +1,7 @@
-package MonsterCard.mtcg.managers;
+package bif3.mtcg.managers;
 
-import MonsterCard.mtcg.User;
-import bif3.swe1.database.DatabaseService;
+import bif3.database.DatabaseService;
+import bif3.mtcg.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
