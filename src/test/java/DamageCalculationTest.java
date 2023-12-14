@@ -1,8 +1,8 @@
 import org.junit.jupiter.api.Test;
 
-import bif3.mtcg.Card;
-import bif3.mtcg.managers.CardManager;
-import bif3.mtcg.managers.CombatManager;
+import MonsterCardGame.mtcg.Card;
+import MonsterCardGame.mtcg.managers.CardManager;
+import MonsterCardGame.mtcg.managers.BattleManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -17,7 +17,7 @@ public class DamageCalculationTest {
         float CardDamage2 = 15;
         Card card1 = new Card("1",CardName1,CardDamage1, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card1,card2);
         float result2 = manager.calculateDamage(card2,card1);
         assertEquals(15,result1);
@@ -33,7 +33,7 @@ public class DamageCalculationTest {
         float CardDamage2 = 100;
         Card card1 = new Card("1",CardName1,CardDamage1, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card1,card2);
         float result2 = manager.calculateDamage(card2,card1);
         assertEquals(-1,result1);
@@ -49,7 +49,7 @@ public class DamageCalculationTest {
         float CardDamage2 = 100;
         Card card1 = new Card("1",CardName1,CardDamage1, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card1,card2);
         float result2 = manager.calculateDamage(card2,card1);
         assertEquals(50,result1);
@@ -65,7 +65,7 @@ public class DamageCalculationTest {
         float CardDamage2 = 100;
         Card card1 = new Card("1",CardName1,CardDamage1, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card1,card2);
         float result2 = manager.calculateDamage(card2,card1);
         assertEquals(0,result1);
@@ -82,7 +82,7 @@ public class DamageCalculationTest {
         Card card1 = new Card("1",CardName1,damage, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,damage, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
         Card card3 = new Card("2",CardName3,damage, cardManager.createCardType(CardName3), cardManager.createElementType(CardName3));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card1,card2);
         float result2 = manager.calculateDamage(card1,card3);
         assertEquals(100,result1);
@@ -98,7 +98,7 @@ public class DamageCalculationTest {
         Card card1 = new Card("1",CardName1,damage, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,damage, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
         Card card3 = new Card("2",CardName3,damage, cardManager.createCardType(CardName3), cardManager.createElementType(CardName3));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card2,card1);
         float result2 = manager.calculateDamage(card2,card3);
         assertEquals(25,result1);
@@ -114,7 +114,7 @@ public class DamageCalculationTest {
         Card card1 = new Card("1",CardName1,damage, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,damage, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
         Card card3 = new Card("2",CardName3,damage, cardManager.createCardType(CardName3), cardManager.createElementType(CardName3));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card3,card1);
         float result2 = manager.calculateDamage(card3,card2);
         assertEquals(100,result1);
@@ -130,7 +130,7 @@ public class DamageCalculationTest {
         Card card1 = new Card("1",CardName1,damage, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,damage, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
         Card card3 = new Card("2",CardName3,damage, cardManager.createCardType(CardName3), cardManager.createElementType(CardName3));
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card1,card2);
         float result2 = manager.calculateDamage(card1,card3);
         float result3 = manager.calculateDamage(card2,card1);

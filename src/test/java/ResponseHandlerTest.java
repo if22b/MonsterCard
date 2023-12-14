@@ -1,11 +1,5 @@
 import static org.mockito.Mockito.times;
 
-import bif3.mtcg.User;
-import bif3.mtcg.managers.CardManager;
-import bif3.mtcg.managers.UserManager;
-import bif3.server.ResponseHandler;
-import bif3.server.context.RequestContext;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -13,6 +7,12 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import MonsterCardGame.mtcg.User;
+import MonsterCardGame.mtcg.managers.CardManager;
+import MonsterCardGame.mtcg.managers.UserManager;
+import MonsterCardGame.server.ResponseHandler;
+import MonsterCardGame.server.context.RequestContext;
 
 import java.io.BufferedWriter;
 import java.io.IOException;

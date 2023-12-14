@@ -4,12 +4,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import bif3.mtcg.Card;
-import bif3.mtcg.User;
-import bif3.mtcg.collections.Deck;
-import bif3.mtcg.managers.CombatManager;
-import bif3.mtcg.types.CardType;
-import bif3.mtcg.types.ElementType;
+import MonsterCardGame.mtcg.Card;
+import MonsterCardGame.mtcg.User;
+import MonsterCardGame.mtcg.collections.Deck;
+import MonsterCardGame.mtcg.enums.CardType;
+import MonsterCardGame.mtcg.enums.ElementType;
+import MonsterCardGame.mtcg.managers.BattleManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ public class CombatTest {
 
     @Test
     public void drawCombatTest() {
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         when(userA.getName()).thenReturn("MockUser_1");
         when(userB.getName()).thenReturn("MockUser_2");
         manager.battle(userA,userB,deck_0,deck_0);
@@ -53,7 +53,7 @@ public class CombatTest {
 
     @Test
     public void winCombatTest() {
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         Card card = new Card ("2","Kraken_30",30, CardType.Kraken, ElementType.water);
         List<Card> cards = new ArrayList<>();
         cards.add(card);

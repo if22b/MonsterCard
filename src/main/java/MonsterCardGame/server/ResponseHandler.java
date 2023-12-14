@@ -1,17 +1,17 @@
-package bif3.server;
-import bif3.database.DatabaseService;
-import bif3.mtcg.*;
-import bif3.mtcg.managers.CardManager;
-import bif3.mtcg.managers.CombatManager;
-import bif3.mtcg.managers.TradeManager;
-import bif3.mtcg.managers.UserManager;
-import bif3.server.context.RequestContext;
-import bif3.server.context.ResponseContext;
-
+package MonsterCardGame.server;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import MonsterCardGame.database.DatabaseService;
+import MonsterCardGame.mtcg.*;
+import MonsterCardGame.mtcg.managers.CardManager;
+import MonsterCardGame.mtcg.managers.BattleManager;
+import MonsterCardGame.mtcg.managers.TradeManager;
+import MonsterCardGame.mtcg.managers.UserManager;
+import MonsterCardGame.server.context.RequestContext;
+import MonsterCardGame.server.context.ResponseContext;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -130,7 +130,7 @@ public class ResponseHandler {
 
     private ResponseContext deleteAll(RequestContext request){
         ResponseContext response = new ResponseContext("400 Bad Request");
-        UserManager userManager = UserManager.getInstance();
+        // UserManager userManager = UserManager.getInstance();
         /*if (request.getHeader_values().containsKey("authorization:") && !userManager.isAdmin(request.getHeader_values().get("authorization:"))){
             response.setStatus("403 Forbidden");
             return response;
@@ -376,7 +376,7 @@ public class ResponseHandler {
     }
 
     private ResponseContext scoreboard(RequestContext request){
-        CombatManager manager = CombatManager.getInstance();
+        BattleManager manager = BattleManager.getInstance();
         ResponseContext response = new ResponseContext("400 Bad Request");
         if ("GET".equals(request.getHttp_verb())) {
             response.setPayload(manager.getScoreboard());
@@ -438,7 +438,7 @@ public class ResponseHandler {
     private ResponseContext battle(RequestContext request,User user){
         ResponseContext response = new ResponseContext("400 Bad Request");
         if ("POST".equals(request.getHttp_verb())) {
-            CombatManager manager = CombatManager.getInstance();
+            BattleManager manager = BattleManager.getInstance();
             String payload = manager.addUser(user);
             if (payload != null){
                 response.setPayload(payload);

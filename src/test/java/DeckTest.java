@@ -1,10 +1,10 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import bif3.mtcg.Card;
-import bif3.mtcg.collections.Deck;
-import bif3.mtcg.types.CardType;
-import bif3.mtcg.types.ElementType;
+import MonsterCardGame.mtcg.Card;
+import MonsterCardGame.mtcg.collections.Deck;
+import MonsterCardGame.mtcg.enums.CardType;
+import MonsterCardGame.mtcg.enums.ElementType;
 
 import java.util.ArrayList;
 import java.util.List;

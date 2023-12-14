@@ -1,4 +1,4 @@
-package bif3.mtcg.types;
+package MonsterCardGame.mtcg.enums;
 
 public enum ElementType {
     water,
