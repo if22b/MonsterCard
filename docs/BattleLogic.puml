@@ -1,0 +1,71 @@
+@startuml
+actor PlayerA as "Player A"
+actor PlayerB as "Player B"
+entity "BattleServer" as Server
+entity "PlayerADeck" as DeckA
+entity "PlayerBDeck" as DeckB
+entity "BattleLogic" as Logic
+entity "BattleLog" as Log
+entity "Scoreboard" as SB
+
+== Battle Initialization ==
+PlayerA -> Server: requestBattle()
+PlayerB -> Server: requestBattle()
+Server -> Logic: initializeBattle()
+activate Logic
+
+== Battle Rounds ==
+loop until winner determined or max rounds
+    Server -> DeckA: drawCard(PlayerA)
+    activate DeckA
+    DeckA -> Logic: sendCardInfo()
+    deactivate DeckA
+
+    Server -> DeckB: drawCard(PlayerB)
+    activate DeckB
+    DeckB -> Logic: sendCardInfo()
+    deactivate DeckB
+
+    Logic -> Logic: determineCardTypes()
+    alt Monster card vs Monster card
+        Logic -> Logic: directDamageComparison()
+    else Spell card vs Spell card or Spell card vs Monster card
+        Logic -> Logic: applyElementEffectiveness()
+        Logic -> Logic: applySpecialRules()
+    end
+
+    Logic -> Server: determineRoundOutcome()
+
+    == Round Resolution ==
+    alt round is a draw
+        Server -> PlayerA: informRoundEnd(draw)
+        Server -> PlayerB: informRoundEnd(draw)
+    else round has a winner/loser
+        Server -> PlayerA: informRoundEnd(winner/loser)
+        Server -> PlayerB: informRoundEnd(winner/loser)
+        Logic -> DeckA: transferCard(winner/loser)
+        Logic -> DeckB: transferCard(winner/loser)
+    end
+
+    Logic -> Log: logRoundDetails()
+    Log -> Logic: confirmLogging()
+end
+
+== Battle Conclusion ==
+Logic -> Server: finalizeBattle()
+deactivate Logic
+
+alt battle is a draw
+    Server -> PlayerA: informBattleEnd(draw)
+    Server -> PlayerB: informBattleEnd(draw)
+else battle has a winner/loser
+    Server -> PlayerA: informBattleEnd(winner/loser)
+    Server -> PlayerB: informBattleEnd(winner/loser)
+end
+
+Server -> SB: updatePlayerStats(winner/loser)
+activate SB
+SB -> Server: confirmStatsUpdate()
+deactivate SB
+
+@enduml
