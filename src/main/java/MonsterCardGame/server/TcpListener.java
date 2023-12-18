@@ -64,11 +64,17 @@ package MonsterCardGame.server;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Map;
+import java.util.concurrent.*;
 
 import MonsterCardGame.server.context.RequestContext;
 
+
 public class TcpListener {
+
+    private static final int TIMEOUT = 2500; // 2.5 seconds in milliseconds
+    
     public static void main(String[] args) {
         System.out.println("Start server...");
         try (ServerSocket listener = new ServerSocket(10001, 5)) {
@@ -85,16 +91,19 @@ public class TcpListener {
     }
 
     private static void handleClient(Socket socket) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<?> future = executor.submit(() -> {
+
         try (
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))
-        ) {
-            // Request data
-            RequestContext request;
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))
+            ) {
+                socket.setSoTimeout(TIMEOUT); // Set a timeout for read() operations
+                RequestContext request;
             
             // Unwrap
             Unwrapper wrapper = new Unwrapper(reader);
-            request = wrapper.unwrap(); // Corrected method name
+            request = wrapper.unwrap();
             
             // Print Request
             if (request != null) {
@@ -112,6 +121,9 @@ public class TcpListener {
             // Handle response
             ResponseHandler responder = new ResponseHandler(writer);
             responder.response(request);
+        
+        } catch (SocketTimeoutException e) {
+            System.err.println("Request timed out.");
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -120,6 +132,18 @@ public class TcpListener {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    });
+
+    executor.shutdown(); // Disallow new tasks
+        try {
+            future.get(TIMEOUT, TimeUnit.MILLISECONDS); // Wait for the task to complete or timeout
+        } catch (TimeoutException e) {
+            System.err.println("Terminating the request processing due to timeout.");
+            future.cancel(true); // Interrupt the task thread if it's running
+        } catch (ExecutionException | InterruptedException e) {
+            // Handle other exceptions that may occur during execution
+            e.printStackTrace();
         }
     }
 }

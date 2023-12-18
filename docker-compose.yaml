@@ -1,12 +1,42 @@
-version: '3'
+version: "3.8"
+
 services:
   mtcgdb:
-    image: postgres
+    image: postgres:latest
     container_name: mtcgdb
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mtcgdb   # Define a specific database to be created
     ports:
       - "5432:5432"
     volumes:
-      - /var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data   # Named volume for data persistence
+      - ./src/main/java/MonsterCardGame/database:/docker-entrypoint-initdb.d
+    networks:
+      - mtcg-network   # Custom network for inter-container communication
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.com" # Set the default admin email
+      PGADMIN_DEFAULT_PASSWORD: "admin"  # Set the default password
+    ports:
+      - "5050:80" # pgAdmin will be accessible on http://localhost:5050
+    depends_on:
+      - mtcgdb # Ensure pgAdmin starts after the PostgreSQL database
+    networks:
+      - mtcg-network # Connect to the same network as the database
+
+networks:
+  mtcg-network: # Define the custom network
+    driver: bridge
+
+volumes:
+  pgdata:
