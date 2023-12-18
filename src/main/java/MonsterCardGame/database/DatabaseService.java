@@ -43,7 +43,7 @@ public final class DatabaseService {
     private static volatile DatabaseService instance;
 
     // Database credentials should ideally be loaded from a configuration file
-    private static final String DB_URL = "jdbc:postgresql://localhost/mtcg";
+    private static final String DB_URL = "jdbc:postgresql://localhost:5432/mtcg";
     private static final String USER = "postgres";
     private static final String PASS = "postgres";
 

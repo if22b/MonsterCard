@@ -84,6 +84,7 @@ public class DeckTest {
 
     @Test
     public void deck_add() {
+        // Try to add two more cards to the deck
         Card card5 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card5);
         Card card6 = cards.get((int)(Math.random() * cards.size()));
@@ -91,9 +92,13 @@ public class DeckTest {
 
         deck.addCard(card5);
         deck.addCard(card6);
-        //deck.addCard(cards.get((int)(Math.random() * cards.size())));
-        assertEquals(6,deck.getSize());
+
+        // The deck size should still be 4 as it cannot exceed MAX_DECK_SIZE
+        assertEquals(4, deck.getSize());
+
+        // Remove a card and check the size again
         deck.removeCard(deck.getRandomCard());
-        assertEquals(5,deck.getSize());
+        assertEquals(3, deck.getSize());
     }
+
 }
