@@ -1,15 +1,14 @@
+import mtcg.Card;
+import mtcg.User;
+import mtcg.collections.Deck;
+import mtcg.enums.CardEnum;
+import mtcg.managers.BattleManager;
+import mtcg.enums.ElementEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import MonsterCardGame.mtcg.Card;
-import MonsterCardGame.mtcg.User;
-import MonsterCardGame.mtcg.collections.Deck;
-import MonsterCardGame.mtcg.enums.CardType;
-import MonsterCardGame.mtcg.enums.ElementType;
-import MonsterCardGame.mtcg.managers.BattleManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +28,10 @@ public class CombatTest {
 
     @BeforeEach
     void setUp() {
-        Card card1 = new Card ("1","Kraken_0",0, CardType.Kraken, ElementType.water);
-        Card card2 = new Card ("2","Kraken_0",0, CardType.Kraken, ElementType.water);
-        Card card3 = new Card ("3","Kraken_0",0, CardType.Kraken, ElementType.water);
-        Card card4 = new Card ("4","Kraken_0",0, CardType.Kraken, ElementType.water);
+        Card card1 = new Card ("1","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
+        Card card2 = new Card ("2","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
+        Card card3 = new Card ("3","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
+        Card card4 = new Card ("4","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
         List<Card> cards = new ArrayList<>();
         cards.add(card1);
         cards.add(card2);
@@ -52,10 +51,9 @@ public class CombatTest {
     }
 
     @Test
-
     public void winCombatTest() {
         BattleManager manager = BattleManager.getInstance();
-        Card card = new Card ("2","Kraken_30",30, CardType.Kraken, ElementType.water);
+        Card card = new Card ("2","Kraken_30",30, CardEnum.Kraken, ElementEnum.water);
         List<Card> cards = new ArrayList<>();
         cards.add(card);
         cards.add(card);

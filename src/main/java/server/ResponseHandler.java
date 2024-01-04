@@ -1,17 +1,18 @@
-package MonsterCardGame.server;
+package server;
+import mtcg.User;
+import server.context.RequestContext;
+import server.context.ResponseContext;
+import database.Database;
+// import mtcg.*;
+import mtcg.Card;
+import mtcg.managers.CardManager;
+import mtcg.managers.BattleManager;
+import mtcg.managers.TradeManager;
+import mtcg.managers.UserManager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import MonsterCardGame.database.DatabaseService;
-import MonsterCardGame.mtcg.*;
-import MonsterCardGame.mtcg.managers.CardManager;
-import MonsterCardGame.mtcg.managers.BattleManager;
-import MonsterCardGame.mtcg.managers.TradeManager;
-import MonsterCardGame.mtcg.managers.UserManager;
-import MonsterCardGame.server.context.RequestContext;
-import MonsterCardGame.server.context.ResponseContext;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -130,14 +131,14 @@ public class ResponseHandler {
 
     private ResponseContext deleteAll(RequestContext request){
         ResponseContext response = new ResponseContext("400 Bad Request");
-        // UserManager userManager = UserManager.getInstance();
+        UserManager userManager = UserManager.getInstance();
         /*if (request.getHeader_values().containsKey("authorization:") && !userManager.isAdmin(request.getHeader_values().get("authorization:"))){
             response.setStatus("403 Forbidden");
             return response;
         }*/
         if (request.getHttp_verb().equals("DELETE")) {
             try {
-                Connection conn = DatabaseService.getInstance().getConnection();
+                Connection conn = Database.getInstance().getConnection();
                 PreparedStatement ps = conn.prepareStatement("DELETE FROM packages;");
                 ps.executeUpdate();
                 ps = conn.prepareStatement("DELETE FROM marketplace;");
@@ -168,22 +169,25 @@ public class ResponseHandler {
                 user = authorize(request);
                 if (user != null){
                     String[] parts = request.getRequested().split("/");
-                    if (parts.length == 3){
-                        if (user.getUsername().equals(parts[2])){
-                            response.setPayload(user.getInfo());
-                            if (response.getPayload() != null){
-                                response.setStatus("200 OK");
-                            } else {
-                                response.setStatus("404 Not Found");
-                            }
+                    if (parts.length == 3 && user.getUsername().equals(parts[2])){
+                        String userInfo = user.getInfo();
+                        if (userInfo != null){
+                            response.setStatus("200 OK");
+                            response.setPayload(userInfo);
                         } else {
-                            response.setStatus("401 Unauthorized");
+                            response.setStatus("404 Not Found");
+                            response.setPayload("User information not found");
                         }
+                    } else {
+                        response.setStatus("401 Unauthorized");
+                        response.setPayload("Unauthorized: You can only access your own information");
                     }
                 } else {
                     response.setStatus("401 Unauthorized");
+                    response.setPayload("Unauthorized: Invalid or missing token");
                 }
                 break;
+
             case "POST":
                 mapper = new ObjectMapper();
                 try {
@@ -191,41 +195,54 @@ public class ResponseHandler {
                     if ( jsonNode.has("Username") && jsonNode.has("Password")){
                         if (manager.registerUser(jsonNode.get("Username").asText(),jsonNode.get("Password").asText())) {
                             response.setStatus("201 Created");
+                            response.setPayload("Registration successful");
                         } else {
                             response.setStatus("409 Conflict");
+                            response.setPayload("Registration failed: User already exists");
                         }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    response.setStatus("500 Internal Server Error");
+                    response.setPayload("Registration failed: Internal server error");
                 }
                 break;
+
             case "PUT":
                 user = authorize(request);
                 if (user != null){
                     String[] editUser = request.getRequested().split("/");
-                    if (editUser.length == 3){
-                        if (user.getUsername().equals(editUser[2])){
-                            mapper = new ObjectMapper();
-                            try {
-                                JsonNode jsonNode = mapper.readTree(request.getPayload());
-                                if ( jsonNode.has("Name") && jsonNode.has("Bio") && jsonNode.has("Image")){
-                                    if (user.setUserInfo(jsonNode.get("Name").asText(),jsonNode.get("Bio").asText(),jsonNode.get("Image").asText())){
-                                        response.setStatus("200 OK");
-                                    } else {
-                                        response.setStatus("404 Not Found");
-                                    }
+                    if (editUser.length == 3 && user.getUsername().equals(editUser[2])){
+                        mapper = new ObjectMapper();
+                        try {
+                            JsonNode jsonNode = mapper.readTree(request.getPayload());
+                            if (jsonNode.has("Name") && jsonNode.has("Bio") && jsonNode.has("Image")){
+                                if (user.setUserInfo(jsonNode.get("Name").asText(), jsonNode.get("Bio").asText(), jsonNode.get("Image").asText())){
+                                    response.setStatus("200 OK");
+                                    response.setPayload("User information updated successfully");
+                                } else {
+                                    response.setStatus("400 Bad Request");
+                                    response.setPayload("Failed to update user information");
                                 }
-                            } catch (IOException e) {
-                                e.printStackTrace();
+                            } else {
+                                response.setStatus("400 Bad Request");
+                                response.setPayload("Invalid request: Missing required fields (Name, Bio, Image)");
                             }
-                        } else {
-                            response.setStatus("401 Unauthorized");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            response.setStatus("500 Internal Server Error");
+                            response.setPayload("Internal server error while updating user information");
                         }
+                    } else {
+                        response.setStatus("401 Unauthorized");
+                        response.setPayload("Unauthorized: You can only update your own information");
                     }
                 } else {
                     response.setStatus("401 Unauthorized");
+                    response.setPayload("Unauthorized: Invalid or missing token");
                 }
                 break;
+
             default:
                 break;
         }
@@ -243,24 +260,41 @@ public class ResponseHandler {
                     if ( jsonNode.has("Username") && jsonNode.has("Password")){
                         if (manager.loginUser(jsonNode.get("Username").asText(),jsonNode.get("Password").asText())) {
                             response.setStatus("200 OK");
+                            response.setPayload("Login successful");
+                        }
+                        else {
+                            response.setStatus("401 Unauthorized");
+                            response.setPayload("Login failed: Invalid username or password");
                         }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    response.setStatus("500 Internal Server Error");
+                    response.setPayload("Login failed: Internal server error");
                 }
                 break;
             case "DELETE":
                 try {
                     JsonNode jsonNode = mapper.readTree(request.getPayload());
-                    if ( jsonNode.has("Username") && jsonNode.has("Password")){
-                        if (manager.logoutUser(jsonNode.get("Username").asText(),jsonNode.get("Password").asText())) {
+                    if (jsonNode.has("Username") && jsonNode.has("Password")){
+                        if (manager.logoutUser(jsonNode.get("Username").asText(), jsonNode.get("Password").asText())) {
                             response.setStatus("200 OK");
+                            response.setPayload("Logout successful");
+                        } else {
+                            response.setStatus("401 Unauthorized");
+                            response.setPayload("Logout failed: Invalid credentials or user not logged in");
                         }
+                    } else {
+                        response.setStatus("400 Bad Request");
+                        response.setPayload("Invalid request: Username and password required");
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    response.setStatus("500 Internal Server Error");
+                    response.setPayload("Internal server error during logout");
                 }
                 break;
+
             default:
                 break;
         }
@@ -274,6 +308,7 @@ public class ResponseHandler {
             UserManager userManager = UserManager.getInstance();
             if (request.getHeader_values().containsKey("authorization:") && !userManager.isAdmin(request.getHeader_values().get("authorization:"))){
                 response.setStatus("403 Forbidden");
+                response.setPayload("Package creation failed: Unauthorized access");
                 return response;
             }
             ObjectMapper mapper = new ObjectMapper();
@@ -289,82 +324,128 @@ public class ResponseHandler {
                             for (Card card_tmp: createdCards){
                                 manager.deleteCard(card_tmp.getId());
                             }
+                            response.setStatus("409 Conflict");
+                            response.setPayload("Package creation failed: Error in registering cards");
                             return response;
                         }
                     }
                     if(manager.createPackage(cards)){
                         response.setStatus("201 Created");
+                        response.setPayload("Package creation successful");
                     } else {
                         for (Card card_tmp: createdCards){
                             manager.deleteCard(card_tmp.getId());
                         }
+                        response.setStatus("409 Conflict");
+                        response.setPayload("Package creation failed: Error in creating package");
                     }
+                }
+                else {
+                    response.setStatus("400 Bad Request");
+                    response.setPayload("Package creation failed: Invalid card count");
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                response.setStatus("500 Internal Server Error");
+                response.setPayload("Package creation failed: Internal server error");
             }
         }
         return response;
     }
 
-    private ResponseContext transactionsPackages(User user,RequestContext request){
+    private ResponseContext transactionsPackages(User user, RequestContext request){
         CardManager manager = CardManager.getInstance();
         ResponseContext response = new ResponseContext("400 Bad Request");
         if (request.getHttp_verb().equals("POST")) {
             if (manager.acquirePackage2User(user)){
                 response.setStatus("200 OK");
+                response.setPayload("Package acquisition successful");
             } else {
                 response.setStatus("409 Conflict");
+                response.setPayload("Package acquisition failed: Insufficient funds or no available packages");
             }
         }
         return response;
     }
 
-    private ResponseContext showCards(User user,RequestContext request){
+
+    private ResponseContext showCards(User user, RequestContext request){
         ResponseContext response = new ResponseContext("400 Bad Request");
         if ("GET".equals(request.getHttp_verb())) {
-            String json = CardManager.getInstance().showUserCards(user);
-            if (json != null) {
-                response.setStatus("200 OK");
-                response.setPayload(json);
+            if (user != null) {
+                String json = CardManager.getInstance().showUserCards(user);
+                if (json != null) {
+                    response.setStatus("200 OK");
+                    response.setPayload(json);
+                } else {
+                    response.setStatus("404 Not Found");
+                    response.setPayload("No cards found for user");
+                }
             } else {
-                response.setStatus("410 Error");
+                response.setStatus("401 Unauthorized");
+                response.setPayload("User not authorized or token missing");
             }
         }
         return response;
     }
 
-    private ResponseContext requestDeck(User user,RequestContext request){
+
+    private ResponseContext requestDeck(User user, RequestContext request){
         ResponseContext response = new ResponseContext("400 Bad Request");
         CardManager manager = CardManager.getInstance();
         switch (request.getHttp_verb()) {
             case "GET":
-                String json = manager.showUserDeck(user);
-                if (json != null){
-                    response.setStatus("200 OK");
-                    response.setPayload(json);
-                } else {
-                    response.setStatus("410 Error");
-                }
-                break;
-            case "PUT":
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    List<String> ids = mapper.readValue(request.getPayload(), new TypeReference<>(){});
-                    if (ids.size() == 4){
-                        if (manager.createDeck(user,ids)){
-                            response.setStatus("201 Created");
-                        }
+                if (user != null) {
+                    String json = manager.showUserDeck(user);
+                    if (json != null){
+                        response.setStatus("200 OK");
+                        response.setPayload(json);
+                    } else {
+                        response.setStatus("404 Not Found");
+                        response.setPayload("Deck not configured for user");
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } else {
+                    response.setStatus("401 Unauthorized");
+                    response.setPayload("User not authorized or token missing");
                 }
                 break;
+
+            case "PUT":
+                if (user != null) {
+                    ObjectMapper mapper = new ObjectMapper();
+                    try {
+                        List<String> ids = mapper.readValue(request.getPayload(), new TypeReference<>(){});
+                        if (ids.size() == 4){
+                            if (manager.createDeck(user, ids)){
+                                response.setStatus("201 Created");
+                                response.setPayload("Deck successfully configured for user " + user.getUsername());
+                            } else {
+                                response.setStatus("409 Conflict");
+                                response.setPayload("Deck update failed: Invalid card IDs or other error");
+                            }
+                        } else {
+                            response.setStatus("400 Bad Request");
+                            response.setPayload("Invalid request: Incorrect number of cards");
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        response.setStatus("500 Internal Server Error");
+                        response.setPayload("Internal server error during deck update");
+                    }
+                } else {
+                    response.setStatus("401 Unauthorized");
+                    response.setPayload("User not authorized or token missing");
+                }
+                break;
+
             default:
+                response.setStatus("405 Method Not Allowed");
+                response.setPayload("Invalid request method.");
                 break;
         }
         return response;
     }
+
 
     private ResponseContext stats(User user,RequestContext request){
         ResponseContext response = new ResponseContext("400 Bad Request");
@@ -385,55 +466,88 @@ public class ResponseHandler {
         return response;
     }
 
-    private ResponseContext trade(RequestContext request, User user){
+    private ResponseContext trade(RequestContext request, User user) {
         TradeManager manager = TradeManager.getInstance();
         ResponseContext response = new ResponseContext("400 Bad Request");
         String[] parts;
+        ObjectMapper mapper = new ObjectMapper();
+
         switch (request.getHttp_verb()) {
             case "GET":
-                response.setPayload(manager.showMarketplace());
+                String marketplace = manager.showMarketplace();
+                response.setPayload(marketplace.isEmpty() ? "Marketplace is empty." : marketplace);
                 response.setStatus("200 OK");
                 break;
+
             case "POST":
                 parts = request.getRequested().split("/");
-                ObjectMapper mapper = new ObjectMapper();
-                if (parts.length == 3){
+                if (parts.length == 3) {
                     try {
                         JsonNode jsonNode = mapper.readTree(request.getPayload());
-                        if (jsonNode.has("Card2Trade")){
-                            if (manager.tradeCards(user,parts[2],jsonNode.get("Card2Trade").asText())){
+                        if (jsonNode.has("Card2Trade")) {
+                            if (manager.tradeCards(user, parts[2], jsonNode.get("Card2Trade").asText())) {
                                 response.setStatus("200 OK");
+                                response.setPayload("Card trade successful.");
+                            } else {
+                                response.setStatus("400 Bad Request");
+                                response.setPayload("Failed to trade card.");
                             }
+                        } else {
+                            response.setStatus("400 Bad Request");
+                            response.setPayload("Missing 'Card2Trade' in request.");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
+                        response.setStatus("500 Internal Server Error");
+                        response.setPayload("Error processing request.");
                     }
                 } else {
                     try {
                         JsonNode jsonNode = mapper.readTree(request.getPayload());
-                        if (jsonNode.has("Id") && jsonNode.has("CardToTrade") && jsonNode.has("Type") && jsonNode.has("MinimumDamage")){
-                            if (manager.card2market(user,jsonNode.get("Id").asText(),jsonNode.get("CardToTrade").asText(),(float)jsonNode.get("MinimumDamage").asDouble(),jsonNode.get("Type").asText())){
+                        if (jsonNode.has("Id") && jsonNode.has("CardToTrade") && jsonNode.has("Type") && jsonNode.has("MinimumDamage")) {
+                            if (manager.card2market(user, jsonNode.get("Id").asText(), jsonNode.get("CardToTrade").asText(), (float) jsonNode.get("MinimumDamage").asDouble(), jsonNode.get("Type").asText())) {
                                 response.setStatus("201 Created");
+                                response.setPayload("Card successfully added to marketplace.");
+                            } else {
+                                response.setStatus("400 Bad Request");
+                                response.setPayload("Failed to add card to marketplace.");
                             }
+                        } else {
+                            response.setStatus("400 Bad Request");
+                            response.setPayload("Invalid request format for adding card to marketplace.");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
+                        response.setStatus("500 Internal Server Error");
+                        response.setPayload("Error processing request.");
                     }
                 }
                 break;
+
             case "DELETE":
                 parts = request.getRequested().split("/");
-                if (parts.length == 3){
-                    if (manager.removeTrade(user,parts[2])){
+                if (parts.length == 3) {
+                    if (manager.removeTrade(user, parts[2])) {
                         response.setStatus("200 OK");
+                        response.setPayload("Trade removed successfully.");
+                    } else {
+                        response.setStatus("400 Bad Request");
+                        response.setPayload("Failed to remove trade.");
                     }
+                } else {
+                    response.setStatus("400 Bad Request");
+                    response.setPayload("Invalid request format for removing trade.");
                 }
                 break;
+
             default:
+                response.setStatus("405 Method Not Allowed");
+                response.setPayload("Invalid request method.");
                 break;
         }
         return response;
     }
+
 
     private ResponseContext battle(RequestContext request,User user){
         ResponseContext response = new ResponseContext("400 Bad Request");

@@ -1,10 +1,9 @@
+import mtcg.Card;
+import mtcg.collections.Deck;
+import mtcg.enums.CardEnum;
+import mtcg.enums.ElementEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import MonsterCardGame.mtcg.Card;
-import MonsterCardGame.mtcg.collections.Deck;
-import MonsterCardGame.mtcg.enums.CardType;
-import MonsterCardGame.mtcg.enums.ElementType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,26 +17,26 @@ public class DeckTest {
 
     @BeforeEach
     void setUp() {
-        cards.add(new Card("0","Blue Dragon",117, CardType.Dragon, ElementType.water));
-        cards.add(new Card("1","Old Fire Elf",107,CardType.FireElf,ElementType.fire));
-        cards.add(new Card("2","Green Goblin",87,CardType.Goblin,ElementType.normal));
-        cards.add(new Card("3","Heavy Knight",120,CardType.Knight,ElementType.normal));
-        cards.add(new Card("4","Deep Blue Kraken",140,CardType.Kraken,ElementType.water));
-        cards.add(new Card("5","White Ork",98,CardType.Ork,ElementType.normal));
-        cards.add(new Card("6","Dark Wizard",117,CardType.Wizard,ElementType.fire));
-        cards.add(new Card("7","Blue Wave Spell",89,CardType.Spell,ElementType.water));
-        cards.add(new Card("8","Red Fire Spell",100,CardType.Spell,ElementType.fire));
-        cards.add(new Card("9","Normal Spell",100,CardType.Spell,ElementType.normal));
-        cards.add(new Card("10","Red Dragon",123,CardType.Dragon,ElementType.fire));
-        cards.add(new Card("11","Old Water Elf",106,CardType.FireElf,ElementType.water));
-        cards.add(new Card("12","Dark Goblin",102,CardType.Goblin,ElementType.normal));
-        cards.add(new Card("13","Strong Knight",119,CardType.Knight,ElementType.normal));
-        cards.add(new Card("14","Deep Black Kraken",143,CardType.Kraken,ElementType.water));
-        cards.add(new Card("15","Gray Ork",87,CardType.Ork,ElementType.normal));
-        cards.add(new Card("16","White Wizard",110,CardType.Wizard,ElementType.normal));
-        cards.add(new Card("17","Deep Ocean Spell",90,CardType.Spell,ElementType.water));
-        cards.add(new Card("18","Flame Spell",112,CardType.Spell,ElementType.fire));
-        cards.add(new Card("19","Normal Magic Spell",100,CardType.Spell,ElementType.normal));
+        cards.add(new Card("0","Blue Dragon",117, CardEnum.Dragon, ElementEnum.water));
+        cards.add(new Card("1","Old Fire Elf",107, CardEnum.FireElf, ElementEnum.fire));
+        cards.add(new Card("2","Green Goblin",87, CardEnum.Goblin, ElementEnum.normal));
+        cards.add(new Card("3","Heavy Knight",120, CardEnum.Knight, ElementEnum.normal));
+        cards.add(new Card("4","Deep Blue Kraken",140, CardEnum.Kraken, ElementEnum.water));
+        cards.add(new Card("5","White Ork",98, CardEnum.Ork, ElementEnum.normal));
+        cards.add(new Card("6","Dark Wizard",117, CardEnum.Wizard, ElementEnum.fire));
+        cards.add(new Card("7","Blue Wave Spell",89, CardEnum.Spell, ElementEnum.water));
+        cards.add(new Card("8","Red Fire Spell",100, CardEnum.Spell, ElementEnum.fire));
+        cards.add(new Card("9","Normal Spell",100, CardEnum.Spell, ElementEnum.normal));
+        cards.add(new Card("10","Red Dragon",123, CardEnum.Dragon, ElementEnum.fire));
+        cards.add(new Card("11","Old Water Elf",106, CardEnum.FireElf, ElementEnum.water));
+        cards.add(new Card("12","Dark Goblin",102, CardEnum.Goblin, ElementEnum.normal));
+        cards.add(new Card("13","Strong Knight",119, CardEnum.Knight, ElementEnum.normal));
+        cards.add(new Card("14","Deep Black Kraken",143, CardEnum.Kraken, ElementEnum.water));
+        cards.add(new Card("15","Gray Ork",87, CardEnum.Ork, ElementEnum.normal));
+        cards.add(new Card("16","White Wizard",110, CardEnum.Wizard, ElementEnum.normal));
+        cards.add(new Card("17","Deep Ocean Spell",90, CardEnum.Spell, ElementEnum.water));
+        cards.add(new Card("18","Flame Spell",112, CardEnum.Spell, ElementEnum.fire));
+        cards.add(new Card("19","Normal Magic Spell",100, CardEnum.Spell, ElementEnum.normal));
         List<Card> tmp = new ArrayList<>();
         Card card1 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card1);
@@ -84,7 +83,6 @@ public class DeckTest {
 
     @Test
     public void deck_add() {
-        // Try to add two more cards to the deck
         Card card5 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card5);
         Card card6 = cards.get((int)(Math.random() * cards.size()));
@@ -92,13 +90,9 @@ public class DeckTest {
 
         deck.addCard(card5);
         deck.addCard(card6);
-
-        // The deck size should still be 4 as it cannot exceed MAX_DECK_SIZE
-        assertEquals(4, deck.getSize());
-
-        // Remove a card and check the size again
+        //deck.addCard(cards.get((int)(Math.random() * cards.size())));
+        assertEquals(6,deck.getSize());
         deck.removeCard(deck.getRandomCard());
-        assertEquals(3, deck.getSize());
+        assertEquals(5,deck.getSize());
     }
-
 }

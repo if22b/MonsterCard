@@ -1,6 +1,6 @@
-package MonsterCardGame.mtcg.enums;
+package mtcg.enums;
 
-public enum CardType {
+public enum CardEnum {
     Dragon,
     FireElf,
     Goblin,

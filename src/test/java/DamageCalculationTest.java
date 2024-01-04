@@ -1,8 +1,7 @@
+import mtcg.Card;
+import mtcg.managers.CardManager;
+import mtcg.managers.BattleManager;
 import org.junit.jupiter.api.Test;
-
-import MonsterCardGame.mtcg.Card;
-import MonsterCardGame.mtcg.managers.CardManager;
-import MonsterCardGame.mtcg.managers.BattleManager;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
