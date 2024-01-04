@@ -52,6 +52,7 @@ public class CombatTest {
     }
 
     @Test
+
     public void winCombatTest() {
         BattleManager manager = BattleManager.getInstance();
         Card card = new Card ("2","Kraken_30",30, CardType.Kraken, ElementType.water);
