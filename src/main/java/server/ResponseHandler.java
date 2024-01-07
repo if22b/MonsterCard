@@ -173,18 +173,18 @@ public class ResponseHandler {
                         String userInfo = user.getInfo();
                         if (userInfo != null){
                             response.setStatus("200 OK");
-                            response.setPayload(userInfo);
+                            response.setPayload(userInfo + "\n");
                         } else {
                             response.setStatus("404 Not Found");
-                            response.setPayload("User information not found");
+                            response.setPayload("User information not found\n");
                         }
                     } else {
                         response.setStatus("401 Unauthorized");
-                        response.setPayload("Unauthorized: You can only access your own information");
+                        response.setPayload("Unauthorized: You can only access your own information\n");
                     }
                 } else {
                     response.setStatus("401 Unauthorized");
-                    response.setPayload("Unauthorized: Invalid or missing token");
+                    response.setPayload("Unauthorized: Invalid or missing token\n");
                 }
                 break;
 
@@ -195,16 +195,16 @@ public class ResponseHandler {
                     if ( jsonNode.has("Username") && jsonNode.has("Password")){
                         if (manager.registerUser(jsonNode.get("Username").asText(),jsonNode.get("Password").asText())) {
                             response.setStatus("201 Created");
-                            response.setPayload("Registration successful");
+                            response.setPayload("Registration successful\n");
                         } else {
                             response.setStatus("409 Conflict");
-                            response.setPayload("Registration failed: User already exists");
+                            response.setPayload("Registration failed: User already exists\n");
                         }
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                     response.setStatus("500 Internal Server Error");
-                    response.setPayload("Registration failed: Internal server error");
+                    response.setPayload("Registration failed: Internal server error\n");
                 }
                 break;
 
@@ -219,27 +219,27 @@ public class ResponseHandler {
                             if (jsonNode.has("Name") && jsonNode.has("Bio") && jsonNode.has("Image")){
                                 if (user.setUserInfo(jsonNode.get("Name").asText(), jsonNode.get("Bio").asText(), jsonNode.get("Image").asText())){
                                     response.setStatus("200 OK");
-                                    response.setPayload("User information updated successfully");
+                                    response.setPayload("User information updated successfully\n");
                                 } else {
                                     response.setStatus("400 Bad Request");
-                                    response.setPayload("Failed to update user information");
+                                    response.setPayload("Failed to update user information\n");
                                 }
                             } else {
                                 response.setStatus("400 Bad Request");
-                                response.setPayload("Invalid request: Missing required fields (Name, Bio, Image)");
+                                response.setPayload("Invalid request: Missing required fields (Name, Bio, Image)" + "\n");
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
                             response.setStatus("500 Internal Server Error");
-                            response.setPayload("Internal server error while updating user information");
+                            response.setPayload("Internal server error while updating user information\n");
                         }
                     } else {
                         response.setStatus("401 Unauthorized");
-                        response.setPayload("Unauthorized: You can only update your own information");
+                        response.setPayload("Unauthorized: You can only update your own information\n");
                     }
                 } else {
                     response.setStatus("401 Unauthorized");
-                    response.setPayload("Unauthorized: Invalid or missing token");
+                    response.setPayload("Unauthorized: Invalid or missing token\n");
                 }
                 break;
 
@@ -260,11 +260,11 @@ public class ResponseHandler {
                     if ( jsonNode.has("Username") && jsonNode.has("Password")){
                         if (manager.loginUser(jsonNode.get("Username").asText(),jsonNode.get("Password").asText())) {
                             response.setStatus("200 OK");
-                            response.setPayload("Login successful");
+                            response.setPayload("Login successful\n");
                         }
                         else {
                             response.setStatus("401 Unauthorized");
-                            response.setPayload("Login failed: Invalid username or password");
+                            response.setPayload("Login failed: Invalid username or password\n");
                         }
                     }
                 } catch (IOException e) {
@@ -331,7 +331,7 @@ public class ResponseHandler {
                     }
                     if(manager.createPackage(cards)){
                         response.setStatus("201 Created");
-                        response.setPayload("Package creation successful");
+                        response.setPayload("Package creation successful\n");
                     } else {
                         for (Card card_tmp: createdCards){
                             manager.deleteCard(card_tmp.getId());
@@ -359,10 +359,10 @@ public class ResponseHandler {
         if (request.getHttp_verb().equals("POST")) {
             if (manager.acquirePackage2User(user)){
                 response.setStatus("200 OK");
-                response.setPayload("Package acquisition successful");
+                response.setPayload("Package acquisition successful\n");
             } else {
                 response.setStatus("409 Conflict");
-                response.setPayload("Package acquisition failed: Insufficient funds or no available packages");
+                response.setPayload("Package acquisition failed: Insufficient funds or no available packages\n");
             }
         }
         return response;
@@ -376,7 +376,7 @@ public class ResponseHandler {
                 String json = CardManager.getInstance().showUserCards(user);
                 if (json != null) {
                     response.setStatus("200 OK");
-                    response.setPayload(json);
+                    response.setPayload(json + "\n");
                 } else {
                     response.setStatus("404 Not Found");
                     response.setPayload("No cards found for user");
@@ -399,14 +399,14 @@ public class ResponseHandler {
                     String json = manager.showUserDeck(user);
                     if (json != null){
                         response.setStatus("200 OK");
-                        response.setPayload(json);
+                        response.setPayload(json + "\n");
                     } else {
                         response.setStatus("404 Not Found");
-                        response.setPayload("Deck not configured for user");
+                        response.setPayload("Deck not configured for user\n");
                     }
                 } else {
                     response.setStatus("401 Unauthorized");
-                    response.setPayload("User not authorized or token missing");
+                    response.setPayload("User not authorized or token missing\n");
                 }
                 break;
 
@@ -418,19 +418,19 @@ public class ResponseHandler {
                         if (ids.size() == 4){
                             if (manager.createDeck(user, ids)){
                                 response.setStatus("201 Created");
-                                response.setPayload("Deck successfully configured for user " + user.getUsername());
+                                response.setPayload("Deck successfully configured for user " + user.getUsername() + "\n");
                             } else {
                                 response.setStatus("409 Conflict");
-                                response.setPayload("Deck update failed: Invalid card IDs or other error");
+                                response.setPayload("Deck update failed: Invalid card IDs or other error\n");
                             }
                         } else {
                             response.setStatus("400 Bad Request");
-                            response.setPayload("Invalid request: Incorrect number of cards");
+                            response.setPayload("Invalid request: Incorrect number of cards\n");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                         response.setStatus("500 Internal Server Error");
-                        response.setPayload("Internal server error during deck update");
+                        response.setPayload("Internal server error during deck update\n");
                     }
                 } else {
                     response.setStatus("401 Unauthorized");
@@ -451,7 +451,7 @@ public class ResponseHandler {
         ResponseContext response = new ResponseContext("400 Bad Request");
         if ("GET".equals(request.getHttp_verb())) {
             response.setStatus("200 OK");
-            response.setPayload(user.getStats());
+            response.setPayload(user.getStats() + "\n");
         }
         return response;
     }
@@ -487,19 +487,19 @@ public class ResponseHandler {
                         if (jsonNode.has("Card2Trade")) {
                             if (manager.tradeCards(user, parts[2], jsonNode.get("Card2Trade").asText())) {
                                 response.setStatus("200 OK");
-                                response.setPayload("Card trade successful.");
+                                response.setPayload("Card trade successful.\n");
                             } else {
                                 response.setStatus("400 Bad Request");
-                                response.setPayload("Failed to trade card.");
+                                response.setPayload("Failed to trade card.\n");
                             }
                         } else {
                             response.setStatus("400 Bad Request");
-                            response.setPayload("Missing 'Card2Trade' in request.");
+                            response.setPayload("Missing 'Card2Trade' in request.\n");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                         response.setStatus("500 Internal Server Error");
-                        response.setPayload("Error processing request.");
+                        response.setPayload("Error processing card trade request.\n");
                     }
                 } else {
                     try {
@@ -507,19 +507,19 @@ public class ResponseHandler {
                         if (jsonNode.has("Id") && jsonNode.has("CardToTrade") && jsonNode.has("Type") && jsonNode.has("MinimumDamage")) {
                             if (manager.card2market(user, jsonNode.get("Id").asText(), jsonNode.get("CardToTrade").asText(), (float) jsonNode.get("MinimumDamage").asDouble(), jsonNode.get("Type").asText())) {
                                 response.setStatus("201 Created");
-                                response.setPayload("Card successfully added to marketplace.");
+                                response.setPayload("Trading deal successfully created.\n");
                             } else {
                                 response.setStatus("400 Bad Request");
-                                response.setPayload("Failed to add card to marketplace.");
+                                response.setPayload("Trading deal creation failed\n");
                             }
                         } else {
                             response.setStatus("400 Bad Request");
-                            response.setPayload("Invalid request format for adding card to marketplace.");
+                            response.setPayload("Invalid request format for trading deal creation.\n");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                         response.setStatus("500 Internal Server Error");
-                        response.setPayload("Error processing request.");
+                        response.setPayload("Error processing trading deal creation request.\n");
                     }
                 }
                 break;
@@ -529,20 +529,20 @@ public class ResponseHandler {
                 if (parts.length == 3) {
                     if (manager.removeTrade(user, parts[2])) {
                         response.setStatus("200 OK");
-                        response.setPayload("Trade removed successfully.");
+                        response.setPayload("Trade removed successfully.\n");
                     } else {
                         response.setStatus("400 Bad Request");
-                        response.setPayload("Failed to remove trade.");
+                        response.setPayload("Failed to remove trade.\n");
                     }
                 } else {
                     response.setStatus("400 Bad Request");
-                    response.setPayload("Invalid request format for removing trade.");
+                    response.setPayload("Invalid request format for removing trade.\n");
                 }
                 break;
 
             default:
                 response.setStatus("405 Method Not Allowed");
-                response.setPayload("Invalid request method.");
+                response.setPayload("Invalid request method.\n");
                 break;
         }
         return response;
@@ -555,7 +555,7 @@ public class ResponseHandler {
             BattleManager manager = BattleManager.getInstance();
             String payload = manager.addUser(user);
             if (payload != null){
-                response.setPayload(payload);
+                response.setPayload(payload + "\n");
                 response.setStatus("200 OK");
             }
         }

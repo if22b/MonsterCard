@@ -1,6 +1,7 @@
 package mtcg.enums;
 
 public enum CardEnum {
+    chaos,
     Dragon,
     FireElf,
     Goblin,
@@ -9,5 +10,4 @@ public enum CardEnum {
     Ork,
     Wizard,
     Spell,
-    magicdice,
 }

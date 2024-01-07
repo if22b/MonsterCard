@@ -185,8 +185,8 @@ public class CardManager {
             return CardEnum.Ork;
         } else if (name.toLowerCase().contains("wizard")){
             return CardEnum.Wizard;
-        } else if (name.toLowerCase().contains("magicdice")){
-            return CardEnum.magicdice;
+        } else if (name.toLowerCase().contains("chaos")){
+            return CardEnum.chaos;
         }
         return null;
     }

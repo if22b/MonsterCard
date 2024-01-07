@@ -72,12 +72,18 @@ public class BattleManager {
             this.user1 = null;
             this.user2 = null;
             this.response = null;
+            System.out.println("Battle aborted: Missing user or deck");
             return null;
         }
+
+        System.out.println("Battle started: " + user1.getName() + " vs " + user2.getName());
+        System.out.println("Initial Deck Sizes - User1: " + deck1.getSize() + ", User2: " + deck2.getSize());
+
         int turns = 0;
         try {
             ObjectMapper mapper = new ObjectMapper();
             ArrayNode arrayNode = mapper.createArrayNode();
+
             String log;
             while (!deck1.isEmpty() && !deck2.isEmpty() && ++turns <= 100){
                 ObjectNode round = mapper.createObjectNode();
@@ -87,13 +93,20 @@ public class BattleManager {
                 float damage2 = calculateDamage(card2,card1);
                 // Logging
                 round.put("Round",turns);
+                System.out.println("Round " + turns);
+
                 round.put("User_1",user1.getName());
                 round.put("User_2",user2.getName());
+
                 round.put("DeckSizeBefore_1",deck1.getSize());
                 round.put("DeckSizeBefore_2",deck2.getSize());
+                System.out.println("Deck Size User1: " + deck1.getSize() + ", Deck Size User2: " + deck2.getSize());
+
                 round.put("CardID_1",card1.getId());
                 round.put("CardID_2",card2.getId());
                 round.put("CardName_1",card1.getName());
+                System.out.println("Card1: " + card1.getName() + " (Damage: " + damage1 + "), Card2: " + card2.getName() + " (Damage: " + damage2 + ")");
+
                 round.put("CardName_2",card2.getName());
                 round.put("CardDamage_1",damage1);
                 round.put("CardDamage_2",damage2);
@@ -102,17 +115,26 @@ public class BattleManager {
                     deck2.removeCard(card2);
                     deck1.addCard(card2);
                     round.put("Won",user1.getName());
+                    System.out.println("Round " + turns + " winner: " + user1.getName());
                 } else if (damage1 < damage2){
                     deck2.addCard(card1);
                     deck1.removeCard(card1);
                     round.put("Won",user2.getName());
+                    System.out.println("Round " + turns + " winner: " + user2.getName());
                 } else {
                     round.put("Won","Draw");
+                    System.out.println("Round " + turns + ": Draw");
                 }
                 round.put("DeckSizeAfter_1",deck1.getSize());
                 round.put("DeckSizeAfter_2",deck2.getSize());
                 arrayNode.add(round);
             }
+
+            // Log end of the battle here
+            System.out.println("Battle ended after " + turns + " rounds.");
+            System.out.println("Final Deck Size User1: " + deck1.getSize() + ", Final Deck Size User2: " + deck2.getSize());
+            System.out.println("Battle result: " + (deck1.isEmpty() ? user2.getName() + " wins" : deck2.isEmpty() ? user1.getName() + " wins" : "Draw"));
+
             log = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
             if (deck1.isEmpty()){
                 user1.battleLost();
@@ -128,14 +150,15 @@ public class BattleManager {
             return log;
         }  catch (JsonProcessingException e) {
             e.printStackTrace();
+            System.out.println("Exception in battle processing: " + e.getMessage());
         }
         return null;
     }
 
     public float calculateDamage(Card card1, Card card2){
-        if (card1.getCardEnum() == CardEnum.magicdice){
+        if (card1.getCardEnum() == CardEnum.chaos){
             Random rand = new Random();
-            if (rand.nextInt(6) > 3){
+            if (rand.nextInt(6) > 4){
                 return 999;
             }
         }

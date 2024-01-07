@@ -14,7 +14,7 @@ public class Unwrapper {
         this.reader = reader;
     }
 
-    public RequestContext unwarp() {
+    public RequestContext unwrap() {
         RequestContext request;
         try {
             // header

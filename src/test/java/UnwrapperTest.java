@@ -30,7 +30,7 @@ public class UnwrapperTest {
         result.put("content-length:","8");
 
         Unwrapper wrapper = new Unwrapper(reader);
-        request = wrapper.unwarp();
+        request = wrapper.unwrap();
 
         assertEquals("GET", request.getHttp_verb());
         assertEquals("/messages/cards", request.getRequested());
