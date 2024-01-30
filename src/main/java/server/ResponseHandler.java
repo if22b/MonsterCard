@@ -3,7 +3,6 @@ import mtcg.User;
 import server.context.RequestContext;
 import server.context.ResponseContext;
 import database.Database;
-// import mtcg.*;
 import mtcg.Card;
 import mtcg.managers.CardManager;
 import mtcg.managers.BattleManager;
@@ -21,18 +20,23 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 // Handle request and send response
 public class ResponseHandler {
 
     BufferedWriter writer;
 
+    private static final Logger logger = Logger.getLogger(ResponseHandler.class.getName());
+
     public ResponseHandler(BufferedWriter writer){
         this.writer = writer;
     }
 
     public void response(RequestContext request) {
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        logger.info("Processing request: " + request.getHttp_verb() + " " + request.getRequested());
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
+
         if ( request != null && request.getHeader_values() != null /*&& request.getHeader_values().containsKey("content-type:") && request.getHeader_values().get("content-type:").equalsIgnoreCase("application/json")*/ ){
             String[] parts = request.getRequested().split("/");
             User user;
@@ -59,7 +63,7 @@ public class ResponseHandler {
                             if (user != null){
                                 response = transactionsPackages(user,request);
                             } else {
-                                response = new ResponseContext("401 Unauthorized");
+                                response = new ResponseContext("401 Unauthorized", "application/json");
                             }
                         }
                         break;
@@ -68,7 +72,7 @@ public class ResponseHandler {
                         if (user != null){
                             response = showCards(user,request);
                         } else {
-                            response = new ResponseContext("401 Unauthorized");
+                            response = new ResponseContext("401 Unauthorized", "application/json");
                         }
                         break;
                     case "deck":
@@ -76,7 +80,15 @@ public class ResponseHandler {
                         if (user != null){
                             response = requestDeck(user,request);
                         } else {
-                            response = new ResponseContext("401 Unauthorized");
+                            response = new ResponseContext("401 Unauthorized", "application/json");
+                        }
+                        break;
+                    case "deck?format=plain":
+                        user = authorize(request);
+                        if (user != null) {
+                            response = handleFormatPlainDeck(user, request);
+                        } else {
+                            response = new ResponseContext("401 Unauthorized", "text/plain");
                         }
                         break;
                     case "stats":
@@ -84,7 +96,7 @@ public class ResponseHandler {
                         if (user != null){
                             response = stats(user,request);
                         } else {
-                            response = new ResponseContext("401 Unauthorized");
+                            response = new ResponseContext("401 Unauthorized", "application/json");
                         }
                         break;
                     case "score":
@@ -92,7 +104,7 @@ public class ResponseHandler {
                         if (user != null){
                             response = scoreboard(request);
                         } else {
-                            response = new ResponseContext("401 Unauthorized");
+                            response = new ResponseContext("401 Unauthorized", "application/json");
                         }
                         break;
                     case "tradings":
@@ -100,7 +112,7 @@ public class ResponseHandler {
                         if (user != null){
                             response = trade(request,user);
                         } else {
-                            response = new ResponseContext("401 Unauthorized");
+                            response = new ResponseContext("401 Unauthorized", "application/json");
                         }
                         break;
                     case "battles":
@@ -108,7 +120,7 @@ public class ResponseHandler {
                         if (user != null){
                             response = battle(request,user);
                         } else {
-                            response = new ResponseContext("401 Unauthorized");
+                            response = new ResponseContext("401 Unauthorized", "application/json");
                         }
                         break;
                     default:
@@ -118,24 +130,29 @@ public class ResponseHandler {
         }
         // Send response
         try {
+            logger.info("Writing response headers");
             writer.write(response.getHttp_version() + " " + response.getStatus() + "\r\n");
+            logger.info("Response sent with status: " + response.getStatus());
             writer.write("Server: " + response.getServer() + "\r\n");
             writer.write("Content-Type: " + response.getContentType() + "\r\n");
             writer.write("Content-Length: " + response.getContentLength() + "\r\n\r\n");
+            logger.info("Response Headers: Final Content-Type before sending = " + response.getContentType() +
+                    ", Content-Length = " + response.getContentLength());
+            logger.info("Writing response payload");
             writer.write(response.getPayload());
+            logger.info("Final Payload before sending: " + response.getPayload());
             writer.flush();
+            logger.info("Response sent successfully.");
         } catch (IOException e) {
             e.printStackTrace();
+            logger.severe("Error sending response: " + e.getMessage());
         }
     }
 
     private ResponseContext deleteAll(RequestContext request){
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         UserManager userManager = UserManager.getInstance();
-        /*if (request.getHeader_values().containsKey("authorization:") && !userManager.isAdmin(request.getHeader_values().get("authorization:"))){
-            response.setStatus("403 Forbidden");
-            return response;
-        }*/
+
         if (request.getHttp_verb().equals("DELETE")) {
             try {
                 Connection conn = Database.getInstance().getConnection();
@@ -161,7 +178,7 @@ public class ResponseHandler {
 
     private ResponseContext users(RequestContext request){
         UserManager manager = UserManager.getInstance();
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         ObjectMapper mapper;
         User user;
         switch (request.getHttp_verb()) {
@@ -251,7 +268,7 @@ public class ResponseHandler {
 
     private ResponseContext sessions(RequestContext request){
         UserManager manager = UserManager.getInstance();
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         ObjectMapper mapper = new ObjectMapper();
         switch (request.getHttp_verb()){
             case "POST":
@@ -303,7 +320,7 @@ public class ResponseHandler {
 
     private ResponseContext packages(RequestContext request){
         CardManager manager = CardManager.getInstance();
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         if (request.getHttp_verb().equals("POST")){
             UserManager userManager = UserManager.getInstance();
             if (request.getHeader_values().containsKey("authorization:") && !userManager.isAdmin(request.getHeader_values().get("authorization:"))){
@@ -355,14 +372,19 @@ public class ResponseHandler {
 
     private ResponseContext transactionsPackages(User user, RequestContext request){
         CardManager manager = CardManager.getInstance();
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         if (request.getHttp_verb().equals("POST")) {
-            if (manager.acquirePackage2User(user)){
+            int result = manager.acquirePackage2User(user);
+
+            if (result == 1) {
                 response.setStatus("200 OK");
                 response.setPayload("Package acquisition successful\n");
-            } else {
+            } else if (result == -1) {
                 response.setStatus("409 Conflict");
-                response.setPayload("Package acquisition failed: Insufficient funds or no available packages\n");
+                response.setPayload("Package acquisition failed: Insufficient funds\n");
+            } else if (result == 0) {
+                response.setStatus("404 Not Found");
+                response.setPayload("Package acquisition failed: No available packages\n");
             }
         }
         return response;
@@ -370,7 +392,7 @@ public class ResponseHandler {
 
 
     private ResponseContext showCards(User user, RequestContext request){
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         if ("GET".equals(request.getHttp_verb())) {
             if (user != null) {
                 String json = CardManager.getInstance().showUserCards(user);
@@ -391,8 +413,9 @@ public class ResponseHandler {
 
 
     private ResponseContext requestDeck(User user, RequestContext request){
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         CardManager manager = CardManager.getInstance();
+
         switch (request.getHttp_verb()) {
             case "GET":
                 if (user != null) {
@@ -421,7 +444,7 @@ public class ResponseHandler {
                                 response.setPayload("Deck successfully configured for user " + user.getUsername() + "\n");
                             } else {
                                 response.setStatus("409 Conflict");
-                                response.setPayload("Deck update failed: Invalid card IDs or other error\n");
+                                response.setPayload("Deck update failed\n");
                             }
                         } else {
                             response.setStatus("400 Bad Request");
@@ -446,9 +469,30 @@ public class ResponseHandler {
         return response;
     }
 
+    public ResponseContext handleFormatPlainDeck(User user, RequestContext request) {
+        ResponseContext response = new ResponseContext("400 Bad Request", "text/plain");
+
+        if ("GET".equals(request.getHttp_verb())) {
+            String plainTextDeck = CardManager.getInstance().showUserPlainDeck(user);
+            if (plainTextDeck != null && !plainTextDeck.isEmpty()) {
+                logger.info("Setting content type to text/plain");
+                response.setStatus("200 OK");
+                response.setPayload(plainTextDeck);
+                logger.info("Response content type set to: " + response.getContentType());
+            } else {
+                response.setStatus("404 Not Found");
+                response.setPayload("Deck not configured for user\n");
+            }
+        } else {
+            response.setStatus("405 Method Not Allowed");
+            response.setPayload("Invalid request method: Only GET is supported for this endpoint.");
+        }
+        return response;
+    }
+
 
     private ResponseContext stats(User user,RequestContext request){
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         if ("GET".equals(request.getHttp_verb())) {
             response.setStatus("200 OK");
             response.setPayload(user.getStats() + "\n");
@@ -458,7 +502,7 @@ public class ResponseHandler {
 
     private ResponseContext scoreboard(RequestContext request){
         BattleManager manager = BattleManager.getInstance();
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         if ("GET".equals(request.getHttp_verb())) {
             response.setPayload(manager.getScoreboard());
             response.setStatus("200 OK");
@@ -468,7 +512,8 @@ public class ResponseHandler {
 
     private ResponseContext trade(RequestContext request, User user) {
         TradeManager manager = TradeManager.getInstance();
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
+
         String[] parts;
         ObjectMapper mapper = new ObjectMapper();
 
@@ -484,8 +529,8 @@ public class ResponseHandler {
                 if (parts.length == 3) {
                     try {
                         JsonNode jsonNode = mapper.readTree(request.getPayload());
-                        if (jsonNode.has("Card2Trade")) {
-                            if (manager.tradeCards(user, parts[2], jsonNode.get("Card2Trade").asText())) {
+                        if (jsonNode.has("CardToTrade")) {
+                            if (manager.tradeCards(user, parts[2], jsonNode.get("CardToTrade").asText())) {
                                 response.setStatus("200 OK");
                                 response.setPayload("Card trade successful.\n");
                             } else {
@@ -494,7 +539,7 @@ public class ResponseHandler {
                             }
                         } else {
                             response.setStatus("400 Bad Request");
-                            response.setPayload("Missing 'Card2Trade' in request.\n");
+                            response.setPayload("Failed to trade card with yourself.\n");
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -550,7 +595,7 @@ public class ResponseHandler {
 
 
     private ResponseContext battle(RequestContext request,User user){
-        ResponseContext response = new ResponseContext("400 Bad Request");
+        ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
         if ("POST".equals(request.getHttp_verb())) {
             BattleManager manager = BattleManager.getInstance();
             String payload = manager.addUser(user);
@@ -567,6 +612,7 @@ public class ResponseHandler {
         if (request.getHeader_values().containsKey("authorization:")){
             UserManager manager = UserManager.getInstance();
             user = manager.authorizeUser(request.getHeader_values().get("authorization:"));
+            logger.info("User authorized: " + user.getUsername());
         }
         return user;
     }

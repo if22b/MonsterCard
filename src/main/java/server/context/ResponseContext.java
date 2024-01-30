@@ -20,11 +20,11 @@ public class ResponseContext {
     @Getter
     private String payload;
 
-    public ResponseContext(String status){
+    public ResponseContext(String status, String contentType){
         http_version = "HTTP/1.1";
         this.status = status;
         server = "mtcg-server";
-        contentType = "application/json";
+        this.contentType = contentType;
         contentLength = 0;
         payload = "";
     }

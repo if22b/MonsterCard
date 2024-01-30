@@ -13,12 +13,12 @@ import java.util.Map;
 public class User {
 
     @Getter
-    private final String username;
+    private String username;
     @Getter
-    private final String name;
-    private final String bio;
-    private final String image;
-    private final Integer coins;
+    private String name;
+    private String bio;
+    private String image;
+    private Integer coins;
     private int games;
     private int wins;
     private int elo;
@@ -80,22 +80,22 @@ public class User {
         return false;
     }
 
-    public boolean battleWon(){
+    public void battleWon(){
         wins++;
         games++;
         elo+=3;
-        return saveStats();
+        saveStats();
     }
-    public boolean battleLost(){
+    public void battleLost(){
         games++;
         elo-=5;
-        return saveStats();
+        saveStats();
     }
-    public boolean battleDraw(){
+    public void battleDraw(){
         games++;
-        return saveStats();
+        saveStats();
     }
-    public boolean saveStats(){
+    public void saveStats(){
         try {
             Connection conn = Database.getInstance().getConnection();
             PreparedStatement ps = conn.prepareStatement("UPDATE users SET wins = ?, games = ?, elo = ? WHERE username = ?;");
@@ -106,11 +106,9 @@ public class User {
             ps.executeUpdate();
             ps.close();
             conn.close();
-            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false;
     }
     public boolean setUserInfo(String name, String bio, String image){
         try {

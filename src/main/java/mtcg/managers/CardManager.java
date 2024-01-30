@@ -105,6 +105,21 @@ public class CardManager {
         }
     }
 
+    public String showUserPlainDeck (User user){
+        try {
+            Connection conn = Database.getInstance().getConnection();
+            PreparedStatement ps = conn.prepareStatement("SELECT cardID, name, damage FROM cards WHERE owner = ? AND collection = 'deck';");
+            ps.setString(1,user.getUsername());
+            String plainText = result2PlainText(ps.executeQuery());
+            ps.close();
+            conn.close();
+            return plainText;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     private String result2Json(ResultSet rs) throws SQLException, JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         ArrayNode arrayNode = mapper.createArrayNode();
@@ -119,22 +134,43 @@ public class CardManager {
         return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode);
     }
 
-    public boolean acquirePackage2User(User user){
+    private String result2PlainText(ResultSet rs) throws SQLException {
+        StringBuilder plainTextBuilder = new StringBuilder();
+        while (rs.next()) {
+            String id = rs.getString(1);
+            String name = rs.getString(2);
+            String damage = rs.getString(3);
+            plainTextBuilder.append("ID: ").append(id)
+                    .append(", Name: ").append(name)
+                    .append(", Damage: ").append(damage)
+                    .append("\n");
+        }
+        rs.close();
+        return plainTextBuilder.toString();
+    }
+
+    public int acquirePackage2User(User user){
         try {
             Connection conn = Database.getInstance().getConnection();
             // Check Existing Package
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM packages;");
             ResultSet rs = ps.executeQuery();
-            ps.close();
+
             if (!rs.next()) {
                 rs.close();
+                ps.close();
                 conn.close();
-                return false;
+                return 0; // No available packages
             }
+
             int packageID = rs.getInt(1);
+
             // Decrease Coins User
-            if (!user.buyPackage()){
-                return false;
+            if (!user.buyPackage()) {
+                rs.close();
+                ps.close();
+                conn.close();
+                return -1; // Insufficient funds
             }
             // Update Cards Owner and Collection
             PreparedStatement ps_Card = conn.prepareStatement("UPDATE cards SET owner = ?, collection = 'stack' WHERE cardID = ?;");
@@ -145,6 +181,7 @@ public class CardManager {
             }
             rs.close();
             ps_Card.close();
+
             // Delete Package
             PreparedStatement ps_Package = conn.prepareStatement("DELETE FROM packages WHERE packageID = ?;");
             ps_Package.setInt(1,packageID);
@@ -153,9 +190,9 @@ public class CardManager {
             conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1; // Insufficient funds
         }
-        return true;
+        return 1; // Success
     }
 
     public ElementEnum createElementType (String element){

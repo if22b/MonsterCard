@@ -24,8 +24,7 @@ public class BattleManager {
     private User user1;
     private User user2;
     private String response;
-    private boolean working = false;
-    final Object LOCK = new Object();
+    private final Object lock = new Object();
 
     public static BattleManager getInstance()
     {
@@ -36,35 +35,31 @@ public class BattleManager {
     }
 
     public String addUser(User user){
-        if (user1 == null){
-            user1 = user;
-            response = null;
-            working = true;
-            synchronized (LOCK) {
-                while (working) {
-                    try { LOCK.wait(); }
-                    catch (InterruptedException e) {
-                        // treat interrupt as exit request
-                        break;
-                    }
-                }
+        synchronized (lock) {
+            if (this.user1 == null) {
+                this.user1 = user;
+                return "User 1 added. Waiting for another player...";
+            } else if (this.user2 == null) {
+                this.user2 = user;
+                return initiateBattle();
+            } else {
+                return "Battle already in progress. Please wait.";
             }
-            return response;
-        } else if (user2 == null){
-            user2 = user;
-            CardManager manager = new CardManager();
-            Deck deck1 = manager.getDeckUser(user1);
-            Deck deck2 = manager.getDeckUser(user2);
-            response = battle(user1,user2,deck1,deck2);
-            working = false;
-            synchronized (LOCK) {
-                LOCK.notifyAll();
-            }
-            user1 = null;
-            user2 = null;
-            return response;
         }
-        return null;
+    }
+
+    private String initiateBattle() {
+        CardManager manager = new CardManager();
+        Deck deck1 = manager.getDeckUser(user1);
+        Deck deck2 = manager.getDeckUser(user2);
+        String battleResult = battle(user1, user2, deck1, deck2);
+        resetUsers();
+        return battleResult;
+    }
+
+    private void resetUsers() {
+        user1 = null;
+        user2 = null;
     }
 
     public String battle(User user1, User user2, Deck deck1, Deck deck2){

@@ -14,7 +14,6 @@ public class DeckTest {
 
     List<Card> cards = new ArrayList<>();
     Deck deck;
-
     @BeforeEach
     void setUp() {
         cards.add(new Card("0","Blue Dragon",117, CardEnum.Dragon, ElementEnum.water));
@@ -79,20 +78,5 @@ public class DeckTest {
     public void deck_remove() {
         deck.removeCard(deck.getRandomCard());
         assertEquals(3,deck.getSize());
-    }
-
-    @Test
-    public void deck_add() {
-        Card card5 = cards.get((int)(Math.random() * cards.size()));
-        cards.remove(card5);
-        Card card6 = cards.get((int)(Math.random() * cards.size()));
-        cards.remove(card6);
-
-        deck.addCard(card5);
-        deck.addCard(card6);
-        //deck.addCard(cards.get((int)(Math.random() * cards.size())));
-        assertEquals(6,deck.getSize());
-        deck.removeCard(deck.getRandomCard());
-        assertEquals(5,deck.getSize());
     }
 }

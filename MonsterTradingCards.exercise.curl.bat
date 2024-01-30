@@ -147,8 +147,10 @@ echo.
 
 REM --------------------------------------------------
 echo 12) show configured deck
+echo kienboec
 curl -X GET http://localhost:10001/deck --header "Authorization: Bearer kienboec-mtcgToken"
 echo.
+echo altenhof
 curl -X GET http://localhost:10001/deck --header "Authorization: Bearer altenhof-mtcgToken"
 echo.
 echo.
@@ -157,7 +159,6 @@ REM --------------------------------------------------
 echo 13) show configured deck different representation
 echo kienboec
 curl -X GET http://localhost:10001/deck?format=plain --header "Authorization: Bearer kienboec-mtcgToken"
-echo.
 echo.
 echo altenhof
 curl -X GET http://localhost:10001/deck?format=plain --header "Authorization: Bearer altenhof-mtcgToken"
@@ -229,6 +230,7 @@ curl -X GET http://localhost:10001/score --header "Authorization: Bearer kienboe
 echo.
 echo.
 
+
 REM --------------------------------------------------
 echo 20) trade
 echo check trading deals
@@ -262,11 +264,19 @@ curl -X POST http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad
 echo.
 echo try to trade
 echo.
-curl -X POST http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0 --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "\"951e886a-0fbf-425d-8df5-af2ee4830d85\""
+curl -X POST http://localhost:10001/tradings/6cd85277-4590-49d4-b0cf-ba0a921faad0 --header "Content-Type: application/json" --header "Authorization: Bearer altenhof-mtcgToken" -d "{\"CardToTrade\":\"951e886a-0fbf-425d-8df5-af2ee4830d85\"}"
 echo.
 curl -X GET http://localhost:10001/tradings --header "Authorization: Bearer kienboec-mtcgToken"
 echo.
-curl -X GET http://localhost:10001/tradings --header "Authorization: Bearer altenhof-mtcgToken"
+curl  -X GET http://localhost:10001/tradings --header "Authorization: Bearer altenhof-mtcgToken"
+echo.
+echo.
+echo display all cards kienboec
+curl -X GET http://localhost:10001/cards --header "Authorization: Bearer kienboec-mtcgToken"
+echo.
+echo display all cards altenhof
+curl -X GET http://localhost:10001/cards --header "Authorization: Bearer altenhof-mtcgToken"
+echo.
 echo.
 
 REM --------------------------------------------------

@@ -4,11 +4,14 @@ import server.context.RequestContext;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.logging.Logger;
 
 // unwrap request and saves in RequestContext
 public class Unwrapper {
 
     BufferedReader reader;
+
+    private static final Logger logger = Logger.getLogger(ResponseHandler.class.getName());
 
     public Unwrapper(BufferedReader reader){
         this.reader = reader;
@@ -17,18 +20,22 @@ public class Unwrapper {
     public RequestContext unwrap() {
         RequestContext request;
         try {
+            logger.info("Unwrapping request started.");
             // header
             request = readHttpHeader(reader);
             // body
             if (request != null){
                 int contentLength = request.getContentLength();
                 request.setPayload(readHttpBody(reader,contentLength));
+                logger.info("Unwrapping request completed successfully.");
                 return request;
             } else {
+                logger.warning("Failed to unwrap request header.");
                 return null;
             }
         } catch (IOException e) {
             e.printStackTrace();
+            logger.severe("Error in Unwrapper: " + e.getMessage());
         }
         return null;
     }

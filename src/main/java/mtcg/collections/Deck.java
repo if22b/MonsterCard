@@ -30,13 +30,13 @@ public class Deck {
     }
 
     public Card getRandomCard(){
-        if (cards != null && cards.size() > 0){
+        if (cards != null && !cards.isEmpty()){
             return cards.get((int)(Math.random() * cards.size()));
         }
         return null;
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return cards.isEmpty();
     }
 
