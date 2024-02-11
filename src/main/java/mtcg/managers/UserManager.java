@@ -27,15 +27,18 @@ public class UserManager {
             ps.setString(1, token);
             ResultSet rs = ps.executeQuery();
             ps.close();
+
             if (!rs.next()) {
                 rs.close();
                 conn.close();
                 return null;
             }
+
             User user = new User(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getInt(5),rs.getInt(6),rs.getInt(7),rs.getInt(8));
             rs.close();
             conn.close();
             return user;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -49,13 +52,16 @@ public class UserManager {
             ps.setString(1, token);
             ResultSet rs = ps.executeQuery();
             ps.close();
+
             if (!rs.next() || rs.getInt(1) != 1) {
                 rs.close();
                 conn.close();
                 return false;
             }
+
             conn.close();
             return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -64,6 +70,7 @@ public class UserManager {
 
     public boolean registerUser(String username, String pwd) {
         String token = "Bearer " + username + "-mtcgToken";
+
         try {
             Connection conn = Database.getInstance().getConnection();
             PreparedStatement ps;
@@ -71,21 +78,28 @@ public class UserManager {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
             ps.close();
+
             if (!rs.next() || rs.getInt(1) > 0){
                 return false;
             }
+
             if (username.equals("admin")){
                 ps = conn.prepareStatement("INSERT INTO users(username, pwd, token, admin) VALUES(?,?,?,TRUE);");
+
             } else {
                 ps = conn.prepareStatement("INSERT INTO users(username, pwd, token) VALUES(?,?,?);");
             }
+
             ps.setString(1, username);
             ps.setString(2, pwd);
             ps.setString(3, token);
+
             int affectedRows = ps.executeUpdate();
+
             ps.close();
             conn.close();
             return affectedRows != 0;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -101,9 +115,11 @@ public class UserManager {
             int affectedRows = ps.executeUpdate();
             ps.close();
             conn.close();
+
             if (affectedRows == 1) {
                 return true;
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -120,9 +136,11 @@ public class UserManager {
             int affectedRows = ps.executeUpdate();
             ps.close();
             conn.close();
+
             if (affectedRows == 1) {
                 return true;
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

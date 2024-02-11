@@ -55,7 +55,6 @@ public class ResponseHandlerTest {
 
     @Test
     public void registerTest() throws IOException {
-        // Instantiate a MockedStatic in a try-with-resources block
         try (MockedStatic<UserManager> mb = Mockito.mockStatic(UserManager.class)) {
             mb.when(UserManager::getInstance)
                     .thenReturn(userManager);
@@ -71,7 +70,6 @@ public class ResponseHandlerTest {
 
     @Test
     public void loginTest() throws IOException {
-        // Instantiate a MockedStatic in a try-with-resources block
         try (MockedStatic<UserManager> mb = Mockito.mockStatic(UserManager.class)) {
             mb.when(UserManager::getInstance)
                     .thenReturn(userManager);

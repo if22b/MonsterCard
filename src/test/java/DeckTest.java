@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DeckTest {
 
@@ -78,5 +79,63 @@ public class DeckTest {
     public void deck_remove() {
         deck.removeCard(deck.getRandomCard());
         assertEquals(3,deck.getSize());
+    }
+
+    @Test
+    public void testGetRandomCardReturnsNotNull() {
+        assertNotNull(deck.getRandomCard());
+    }
+
+    @Test
+    public void testIsEmptyReturnsFalseWhenNotEmpty() {
+        assertFalse(deck.isEmpty());
+    }
+
+    @Test
+    public void testIsEmptyReturnsTrueAfterRemovingAllCards() {
+        for (int i = 0; i < 4; i++) {
+            deck.removeCard(deck.getRandomCard());
+        }
+        assertTrue(deck.isEmpty());
+    }
+
+    @Test
+    public void addCardToDeck() {
+        Card newCard = new Card("20", "New Card", 100, CardEnum.Knight, ElementEnum.normal);
+        int initialSize = deck.getSize();
+        deck.addCard(newCard);
+        assertEquals(initialSize + 1, deck.getSize());
+    }
+
+    @Test
+    public void addDuplicateCardToDeck() {
+        Card duplicateCard = deck.getRandomCard();
+        int initialSize = deck.getSize();
+        deck.addCard(duplicateCard);
+        assertEquals(initialSize, deck.getSize()); // Size should not change
+    }
+
+    @Test
+    public void checkIsEmptyOnNonEmptyDeck() {
+        assertFalse(deck.isEmpty());
+    }
+
+    @Test
+    public void getRandomCardFromNonEmptyDeck() {
+        assertNotNull(deck.getRandomCard());
+    }
+
+    @Test
+    public void getRandomCardFromEmptyDeck() {
+        Deck emptyDeck = new Deck(new ArrayList<>());
+        assertNull(emptyDeck.getRandomCard());
+    }
+
+    @Test
+    public void removeNonExistentCard() {
+        Card nonExistentCard = new Card("21", "Non-existent Card", 100, CardEnum.Knight, ElementEnum.normal);
+        int initialSize = deck.getSize();
+        deck.removeCard(nonExistentCard);
+        assertEquals(initialSize, deck.getSize()); // Size should remain the same
     }
 }

@@ -18,6 +18,7 @@ public class Server {
 
     public static void main(String[] args) {
         logger.info("Starting server");
+
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_POOL_SIZE);
 
         try (ServerSocket listener = new ServerSocket(PORT, BACKLOG)) {
@@ -26,10 +27,13 @@ public class Server {
             while (true) {
                 Socket socket = listener.accept();
                 logger.info("Client connected: " + socket);
+
                 executor.submit(() -> handleClient(socket));
             }
+
         } catch (IOException e) {
             logger.severe("Server exception: " + e.getMessage());
+
         } finally {
             executor.shutdown();
             logger.info("Server shutting down");
@@ -44,20 +48,24 @@ public class Server {
 
             Unwrapper wrapper = new Unwrapper(reader);
             RequestContext request = wrapper.unwrap();
+
             if (request != null) {
                 logRequest(request);
                 ResponseHandler responder = new ResponseHandler(writer);
                 responder.response(request);
+
             } else {
                 logger.warning("Request context is null after unwrapping.");
             }
 
         } catch (IOException e) {
             logger.severe("Error handling client connection: " + e.getMessage());
+
         } finally {
             try {
                 socket.close();
                 logger.info("Client socket closed: " + socket);
+
             } catch (IOException e) {
                 logger.severe("Error closing client socket: " + e.getMessage());
             }
@@ -68,9 +76,11 @@ public class Server {
         System.out.println("** Client - Start **");
         System.out.println("** Header: **");
         System.out.println("    " + request.getHttp_verb() + " " + request.getRequested() + " " + request.getHttp_version());
+
         for (Map.Entry<String, String> entry : request.getHeader_values().entrySet()) {
             System.out.println("    " + entry.getKey() + ": " + entry.getValue());
         }
+
         System.out.println("** Body: **");
         System.out.println(request.getPayload());
         System.out.println("-------------------------------------------");

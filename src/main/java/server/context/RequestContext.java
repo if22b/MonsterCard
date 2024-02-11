@@ -22,15 +22,15 @@ public class RequestContext {
     @Setter
     private String payload;
 
-    public RequestContext(){
+    public RequestContext() {
         header_values = new HashMap<>();
     }
 
-    public void addHeaderValues(String key, String value){
+    public void addHeaderValues(String key, String value) {
         header_values.put(key,value);
     }
 
-    public int getContentLength(){
+    public int getContentLength() {
         if (header_values != null && header_values.containsKey("content-length:")){
             return Integer.parseInt(header_values.get("content-length:"));
         }

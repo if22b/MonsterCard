@@ -1,7 +1,7 @@
 package mtcg.enums;
 
 public enum CardEnum {
-    chaos,
+    Chaos,
     Dragon,
     FireElf,
     Goblin,

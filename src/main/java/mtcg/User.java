@@ -38,11 +38,14 @@ public class User {
     public String getInfo(){
         try {
             Map<String,String> map = new HashMap<>();
+
             map.put("Name:",name);
             map.put("Bio:",bio);
             map.put("Image:",image);
             map.put("Coins:",coins.toString());
+
             return new ObjectMapper().writeValueAsString(map);
+
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -52,9 +55,12 @@ public class User {
     public String getStats(){
         try {
             Map<String,Integer> map = new HashMap<>();
+
             map.put("Wins:",wins);
             map.put("Games:",games);
+
             return new ObjectMapper().writeValueAsString(map);
+
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -66,6 +72,7 @@ public class User {
             if (coins < 5){
                 return false;
             }
+
             Connection conn = Database.getInstance().getConnection();
             PreparedStatement ps = conn.prepareStatement("UPDATE users SET coins = ? WHERE username = ?;");
             ps.setInt(1,coins-5);
@@ -73,7 +80,9 @@ public class User {
             ps.executeUpdate();
             ps.close();
             conn.close();
+
             return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -86,15 +95,18 @@ public class User {
         elo+=3;
         saveStats();
     }
+
     public void battleLost(){
         games++;
         elo-=5;
         saveStats();
     }
+
     public void battleDraw(){
         games++;
         saveStats();
     }
+
     public void saveStats(){
         try {
             Connection conn = Database.getInstance().getConnection();
@@ -104,8 +116,10 @@ public class User {
             ps.setInt(3,elo);
             ps.setString(4,username);
             ps.executeUpdate();
+
             ps.close();
             conn.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -119,11 +133,14 @@ public class User {
             ps.setString(3, image);
             ps.setString(4, username);
             int affectedRows = ps.executeUpdate();
+
             ps.close();
             conn.close();
+
             if (affectedRows == 1) {
                 return true;
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
