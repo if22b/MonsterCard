@@ -40,7 +40,7 @@ public class Deck {
         return cards.isEmpty();
     }
 
-    public int getSize(){
+    public int getSize() {
         if (!isEmpty()){
             return cards.size();
         }

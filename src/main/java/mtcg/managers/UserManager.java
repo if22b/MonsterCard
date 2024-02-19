@@ -79,7 +79,7 @@ public class UserManager {
             ResultSet rs = ps.executeQuery();
             ps.close();
 
-            if (!rs.next() || rs.getInt(1) > 0){
+            if (rs.next() && rs.getInt(1) > 0) {
                 return false;
             }
 

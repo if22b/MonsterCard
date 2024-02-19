@@ -37,41 +37,54 @@ public class DeckTest {
         cards.add(new Card("17","Deep Ocean Spell",90, CardEnum.Spell, ElementEnum.water));
         cards.add(new Card("18","Flame Spell",112, CardEnum.Spell, ElementEnum.fire));
         cards.add(new Card("19","Normal Magic Spell",100, CardEnum.Spell, ElementEnum.normal));
+
         List<Card> tmp = new ArrayList<>();
+
         Card card1 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card1);
         tmp.add(card1);
+
         Card card2 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card2);
         tmp.add(card2);
+
         Card card3 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card3);
         tmp.add(card3);
+
         Card card4 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card4);
         tmp.add(card4);
+
         deck = new Deck(tmp);
     }
 
     @Test
     public void deck_size() {
         List<Card> tmp = new ArrayList<>();
+
         Card card1 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card1);
         tmp.add(card1);
+
         Card card2 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card2);
         tmp.add(card2);
+
         Card card3 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card3);
         tmp.add(card3);
+
         Card card4 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card4);
         tmp.add(card4);
+
         Card card5 = cards.get((int)(Math.random() * cards.size()));
         cards.remove(card5);
         tmp.add(card5);
+
         Deck deck1 = new Deck(tmp);
+
         assertEquals(4,deck1.getSize());
     }
 
@@ -102,16 +115,20 @@ public class DeckTest {
     @Test
     public void addCardToDeck() {
         Card newCard = new Card("20", "New Card", 100, CardEnum.Knight, ElementEnum.normal);
+
         int initialSize = deck.getSize();
         deck.addCard(newCard);
+
         assertEquals(initialSize + 1, deck.getSize());
     }
 
     @Test
     public void addDuplicateCardToDeck() {
         Card duplicateCard = deck.getRandomCard();
+
         int initialSize = deck.getSize();
         deck.addCard(duplicateCard);
+
         assertEquals(initialSize, deck.getSize()); // Size should not change
     }
 
@@ -134,8 +151,10 @@ public class DeckTest {
     @Test
     public void removeNonExistentCard() {
         Card nonExistentCard = new Card("21", "Non-existent Card", 100, CardEnum.Knight, ElementEnum.normal);
+
         int initialSize = deck.getSize();
         deck.removeCard(nonExistentCard);
+
         assertEquals(initialSize, deck.getSize()); // Size should remain the same
     }
 }

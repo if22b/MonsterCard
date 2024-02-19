@@ -29,7 +29,7 @@ public class ResponseHandler {
 
     private static final Logger logger = Logger.getLogger(ResponseHandler.class.getName());
 
-    public ResponseHandler(BufferedWriter writer){
+    public ResponseHandler(BufferedWriter writer) {
         this.writer = writer;
     }
 
@@ -37,7 +37,7 @@ public class ResponseHandler {
         logger.info("Processing request: " + request.getHttp_verb() + " " + request.getRequested());
         ResponseContext response = new ResponseContext("400 Bad Request", "application/json");
 
-        if ( request != null && request.getHeader_values() != null /*&& request.getHeader_values().containsKey("content-type:") && request.getHeader_values().get("content-type:").equalsIgnoreCase("application/json")*/ ){
+        if ( request != null && request.getHeader_values() != null ){
             String[] parts = request.getRequested().split("/");
             User user;
 

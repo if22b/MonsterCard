@@ -78,6 +78,7 @@ public class User {
             ps.setInt(1,coins-5);
             ps.setString(2,username);
             ps.executeUpdate();
+
             ps.close();
             conn.close();
 
@@ -123,7 +124,9 @@ public class User {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
+
     public boolean setUserInfo(String name, String bio, String image){
         try {
             Connection conn = Database.getInstance().getConnection();

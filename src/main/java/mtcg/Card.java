@@ -27,6 +27,7 @@ public class Card {
         this.id = id;
         this.name = name;
         this.damage = damage;
+
         cardEnum = type;
         elementEnum = element;
     }

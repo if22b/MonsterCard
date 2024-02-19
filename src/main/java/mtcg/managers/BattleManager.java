@@ -23,7 +23,9 @@ public class BattleManager {
 
     private User user1;
     private User user2;
+
     private String response;
+
     private final Object lock = new Object();
 
     public static BattleManager getInstance()
@@ -218,7 +220,7 @@ public class BattleManager {
             }
         }
 
-        if (card2.getCardEnum() == CardEnum.Kraken){
+        if (card2.getCardEnum() == CardEnum.Kraken && card1.getCardEnum() == CardEnum.Spell){
             return 0;
         }
 

@@ -32,20 +32,26 @@ public class CombatTest {
         Card card2 = new Card ("2","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
         Card card3 = new Card ("3","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
         Card card4 = new Card ("4","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
+
         List<Card> cards = new ArrayList<>();
+
         cards.add(card1);
         cards.add(card2);
         cards.add(card3);
         cards.add(card4);
+
         deck_0 = new Deck(cards);
     }
 
     @Test
     public void drawCombatTest() {
         BattleManager manager = BattleManager.getInstance();
+
         when(userA.getName()).thenReturn("MockUser_1");
         when(userB.getName()).thenReturn("MockUser_2");
+
         manager.battle(userA,userB,deck_0,deck_0);
+
         verify(userA).battleDraw();
         verify(userB).battleDraw();
     }
@@ -53,16 +59,21 @@ public class CombatTest {
     @Test
     public void winCombatTest() {
         BattleManager manager = BattleManager.getInstance();
+
         Card card = new Card ("2","Kraken_30",30, CardEnum.Kraken, ElementEnum.water);
         List<Card> cards = new ArrayList<>();
+
         cards.add(card);
         cards.add(card);
         cards.add(card);
         cards.add(card);
+
         Deck deck_1 = new Deck(cards);
+
         when(userA.getName()).thenReturn("MockUser_1");
         when(userB.getName()).thenReturn("MockUser_2");
         manager.battle(userA,userB,deck_0,deck_1);
+
         verify(userA).battleLost();
         verify(userB).battleWon();
     }
