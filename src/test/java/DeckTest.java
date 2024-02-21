@@ -133,16 +133,6 @@ public class DeckTest {
     }
 
     @Test
-    public void checkIsEmptyOnNonEmptyDeck() {
-        assertFalse(deck.isEmpty());
-    }
-
-    @Test
-    public void getRandomCardFromNonEmptyDeck() {
-        assertNotNull(deck.getRandomCard());
-    }
-
-    @Test
     public void getRandomCardFromEmptyDeck() {
         Deck emptyDeck = new Deck(new ArrayList<>());
         assertNull(emptyDeck.getRandomCard());

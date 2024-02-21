@@ -77,4 +77,5 @@ public class CombatTest {
         verify(userA).battleLost();
         verify(userB).battleWon();
     }
+
 }

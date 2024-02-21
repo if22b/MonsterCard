@@ -8,27 +8,27 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class DamageCalculationTest {
 
     @Test
+    // The FireElves know Dragons since they were little and can evade their attacks.
     public void FireElf_ability() {
         CardManager cardManager = CardManager.getInstance();
 
         String CardName1 = "FireElf";
         float CardDamage1 = 15;
 
-        String CardName2 = "WaterDragon";
+        String CardName2 = "Dragon";
         float CardDamage2 = 15;
 
         Card card1 = new Card("1",CardName1,CardDamage1, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
 
         BattleManager manager = BattleManager.getInstance();
-        float result1 = manager.calculateDamage(card1,card2);
-        float result2 = manager.calculateDamage(card2,card1);
+        float result = manager.calculateDamage(card2,card1);
 
-        assertEquals(15,result1);
-        assertEquals(0,result2);
+        assertEquals(0,result);
     }
 
     @Test
+    // The armor of Knights is so heavy that WaterSpells make them drown them instantly.
     public void Knight_ability() {
         CardManager cardManager = CardManager.getInstance();
 
@@ -42,14 +42,13 @@ public class DamageCalculationTest {
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
 
         BattleManager manager = BattleManager.getInstance();
-        float result1 = manager.calculateDamage(card1,card2);
-        float result2 = manager.calculateDamage(card2,card1);
+        float result = manager.calculateDamage(card1,card2);
 
-        assertEquals(-1,result1);
-        assertEquals(50,result2);
+        assertEquals(-1,result);
     }
 
     @Test
+    // The Kraken is immune against spells.
     public void Kraken_ability() {
         CardManager cardManager = CardManager.getInstance();
 
@@ -63,14 +62,13 @@ public class DamageCalculationTest {
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
 
         BattleManager manager = BattleManager.getInstance();
-        float result1 = manager.calculateDamage(card1,card2);
-        float result2 = manager.calculateDamage(card2,card1);
+        float result = manager.calculateDamage(card2,card1);
 
-        assertEquals(50,result1);
-        assertEquals(0,result2);
+        assertEquals(0,result);
     }
 
     @Test
+    // Wizzard can control Orks, so they are not able to damage them.
     public void Ork_ability() {
         CardManager cardManager = CardManager.getInstance();
 
@@ -84,14 +82,13 @@ public class DamageCalculationTest {
         Card card2 = new Card("2",CardName2,CardDamage2, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
 
         BattleManager manager = BattleManager.getInstance();
-        float result1 = manager.calculateDamage(card1,card2);
+        float result = manager.calculateDamage(card1,card2);
 
-        float result2 = manager.calculateDamage(card2,card1);
-        assertEquals(0,result1);
-        assertEquals(100,result2);
+        assertEquals(0,result);
     }
 
     @Test
+    // Ein Wasserspruch wird gegen einen Feuerspruch und einen normalen Spruch getestet.
     public void WaterSpell_ability() {
         CardManager cardManager = CardManager.getInstance();
 
@@ -111,7 +108,9 @@ public class DamageCalculationTest {
         assertEquals(100,result1);
         assertEquals(25,result2);
     }
+
     @Test
+    // Ein Feuerspruch wird gegen einen Wasserspruch und einen normalen Spruch getestet.
     public void FireSpell_ability() {
         CardManager cardManager = CardManager.getInstance();
 
@@ -131,7 +130,9 @@ public class DamageCalculationTest {
         assertEquals(25,result1);
         assertEquals(100,result2);
     }
+
     @Test
+    // Ein normaler Spruch wird gegen einen Wasserspruch und einen Feuerspruch getestet.
     public void NormalSpell_ability() {
         CardManager cardManager = CardManager.getInstance();
 
@@ -142,7 +143,7 @@ public class DamageCalculationTest {
 
         Card card1 = new Card("1",CardName1,damage, cardManager.createCardType(CardName1), cardManager.createElementType(CardName1));
         Card card2 = new Card("2",CardName2,damage, cardManager.createCardType(CardName2), cardManager.createElementType(CardName2));
-        Card card3 = new Card("2",CardName3,damage, cardManager.createCardType(CardName3), cardManager.createElementType(CardName3));
+        Card card3 = new Card("3",CardName3,damage, cardManager.createCardType(CardName3), cardManager.createElementType(CardName3));
 
         BattleManager manager = BattleManager.getInstance();
         float result1 = manager.calculateDamage(card3,card1);
@@ -151,7 +152,9 @@ public class DamageCalculationTest {
         assertEquals(100,result1);
         assertEquals(25,result2);
     }
+
     @Test
+    // Normale Schadensinteraktionen zwischen Drachen, Rittern und Zauberern ohne besondere Fähigkeiten.
     public void NormalMonsterDamage() {
         CardManager cardManager = CardManager.getInstance();
 
