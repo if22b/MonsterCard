@@ -25,22 +25,29 @@ public class CombatTest {
     User userB;
 
     Deck deck_0;
+    Deck deck_1; // Zweites Deck hinzugefügt
 
     @BeforeEach
     void setUp() {
-        Card card1 = new Card ("1","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
-        Card card2 = new Card ("2","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
-        Card card3 = new Card ("3","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
-        Card card4 = new Card ("4","Kraken_0",0, CardEnum.Kraken, ElementEnum.water);
+        // Erstellen des ersten Decks
+        List<Card> cards_0 = new ArrayList<>();
 
-        List<Card> cards = new ArrayList<>();
+        cards_0.add(new Card("1", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
+        cards_0.add(new Card("2", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
+        cards_0.add(new Card("3", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
+        cards_0.add(new Card("4", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
 
-        cards.add(card1);
-        cards.add(card2);
-        cards.add(card3);
-        cards.add(card4);
+        deck_0 = new Deck(cards_0);
 
-        deck_0 = new Deck(cards);
+        // Erstellen des zweiten Decks
+        List<Card> cards_1 = new ArrayList<>();
+
+        cards_1.add(new Card("1", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
+        cards_1.add(new Card("2", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
+        cards_1.add(new Card("3", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
+        cards_1.add(new Card("4", "Kraken_0", 0, CardEnum.Kraken, ElementEnum.water));
+
+        deck_1 = new Deck(cards_1);
     }
 
     @Test
@@ -50,7 +57,8 @@ public class CombatTest {
         when(userA.getName()).thenReturn("MockUser_1");
         when(userB.getName()).thenReturn("MockUser_2");
 
-        manager.battle(userA,userB,deck_0,deck_0);
+        // Verwenden von deck_0 für userA und deck_1 für userB, um ein Unentschieden zu simulieren
+        manager.battle(userA, userB, deck_0, deck_1);
 
         verify(userA).battleDraw();
         verify(userB).battleDraw();
@@ -60,22 +68,23 @@ public class CombatTest {
     public void winCombatTest() {
         BattleManager manager = BattleManager.getInstance();
 
-        Card card = new Card ("2","Kraken_30",30, CardEnum.Kraken, ElementEnum.water);
-        List<Card> cards = new ArrayList<>();
+        List<Card> cards_1 = new ArrayList<>();
+        Card strongCard = new Card("5", "Kraken_30", 30, CardEnum.Kraken, ElementEnum.water);
 
-        cards.add(card);
-        cards.add(card);
-        cards.add(card);
-        cards.add(card);
+        cards_1.add(strongCard);
+        cards_1.add(strongCard);
+        cards_1.add(strongCard);
+        cards_1.add(strongCard);
 
-        Deck deck_1 = new Deck(cards);
+        deck_1 = new Deck(cards_1);
 
         when(userA.getName()).thenReturn("MockUser_1");
         when(userB.getName()).thenReturn("MockUser_2");
-        manager.battle(userA,userB,deck_0,deck_1);
+
+        // Verwenden von deck_0 für userA und deck_1 für userB, um einen Sieg für userB zu simulieren
+        manager.battle(userA, userB, deck_0, deck_1);
 
         verify(userA).battleLost();
         verify(userB).battleWon();
     }
-
 }
