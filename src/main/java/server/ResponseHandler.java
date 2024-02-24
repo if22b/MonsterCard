@@ -564,8 +564,10 @@ public class ResponseHandler {
 
             if (plainTextDeck != null && !plainTextDeck.isEmpty()) {
                 logger.info("Setting content type to text/plain");
+
                 response.setStatus("200 OK");
                 response.setPayload(plainTextDeck);
+
                 logger.info("Response content type set to: " + response.getContentType());
 
             } else {

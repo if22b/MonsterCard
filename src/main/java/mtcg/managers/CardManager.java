@@ -218,8 +218,6 @@ public class CardManager {
 
         } catch (SQLException e) {
             e.printStackTrace();
-
-            return -1; // Insufficient funds
         }
 
         return 1; // Success

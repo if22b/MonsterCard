@@ -16,7 +16,7 @@ public class UnwrapperTest {
     void unwrap() {
         RequestContext request;
         BufferedReader reader = new BufferedReader(new StringReader(
-                "GET /messages/cards HTTP/1.1\r\n" +
+                "GET /cards HTTP/1.1\r\n" +
                 "Host: localhost\r\n" +
                 "Key: value\r\n" +
                 "Content-Type: application/json\r\n" +
@@ -34,7 +34,7 @@ public class UnwrapperTest {
         request = wrapper.unwrap();
 
         assertEquals("GET", request.getHttp_verb());
-        assertEquals("/messages/cards", request.getRequested());
+        assertEquals("/cards", request.getRequested());
         assertEquals("HTTP/1.1", request.getHttp_version());
         assertEquals(result, request.getHeader_values());
         assertEquals("{id:123}", request.getPayload());
@@ -43,7 +43,7 @@ public class UnwrapperTest {
     @Test
     void unwrapWithIncompleteHeader() {
         BufferedReader reader = new BufferedReader(new StringReader(
-                "GET /messages/cards HTTP/1.1\r\n" +
+                "GET /cards HTTP/1.1\r\n" +
                         "Host: localhost\r\n" + // Missing other headers
                         "\r\n"));
 
@@ -52,14 +52,14 @@ public class UnwrapperTest {
 
         assertNotNull(request, "Request should not be null even with incomplete headers");
         assertEquals("GET", request.getHttp_verb(), "HTTP verb should be GET");
-        assertEquals("/messages/cards", request.getRequested(), "Resource should be /messages/cards");
+        assertEquals("/cards", request.getRequested(), "Resource should be /cards");
         assertEquals("HTTP/1.1", request.getHttp_version(), "HTTP version should be HTTP/1.1");
     }
 
     @Test
     void unwrapWithEmptyBody() {
         BufferedReader reader = new BufferedReader(new StringReader(
-                "GET /messages/cards HTTP/1.1\r\n" +
+                "GET /cards HTTP/1.1\r\n" +
                         "Host: localhost\r\n" +
                         "Content-Length: 0\r\n" +
                         "\r\n"));

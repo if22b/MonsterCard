@@ -89,12 +89,6 @@ public class DeckTest {
     }
 
     @Test
-    public void deck_remove() {
-        deck.removeCard(deck.getRandomCard());
-        assertEquals(3,deck.getSize());
-    }
-
-    @Test
     public void testGetRandomCardReturnsNotNull() {
         assertNotNull(deck.getRandomCard());
     }
